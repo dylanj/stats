@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ultimateq stats</title>
+    <script type="text/javascript" src="/assets/zepto.js"></script>
+    <script type="text/javascript" src="/assets/mustache.js"></script>
+    <script type="text/javascript" src="/assets/foo.js"></script>
+    <script type="text/x-mustache-template" id="template">
+      <table>
+        <thead>
+          <th>Username</th>
+          <th>Lines Written</th>
+          <th>Last Message</th>
+        </thead>
+        <tbody>
+          {{#users}}
+            <tr>
+              <td>{{name}}</td>
+              <td>{{num_lines}}</td>
+              <td>{{last_message}}</td>
+            </tr>
+          {{/users}}
+        </tbody>
+      </table>
+    </script>
+  </head>
+<body>
+  Loading...
+</body>
+</html>
