@@ -1,35 +1,42 @@
 package stats
 
+import "fmt"
+
 type Stats struct {
 	users    []User
-	channels []Channel
+	channels map[string]*Channel
 }
 
-func (s *Stats) NewStats() *Stats {
+func NewStats() *Stats {
 	return &Stats{
-	// users: make([]User),
-	// channels: make([]Channels),
+		//users: make([]User),
+		channels: make(map[string]*Channel),
 	}
 }
 
-func (s *Stats) AddChannel(channel Channel) {
-	append(s.channels, channel)
-}
-
-func (s *Stats) FindChannel(name []byte) Channel {
-	for _, channel := range s.channels {
-		fmt.Printf("channel: %s\n", channel.topic)
-
-		if channel.name == name {
-			return channel
-		}
+func (s *Stats) AddChannel(channel *Channel) {
+	if !s.HasChannelByChannel(channel) {
+		s.channels[string(channel.Name)] = channel
+		fmt.Printf("Adding %s to Channels\n", channel.Name)
+	} else {
+		fmt.Printf("Already have %s in list of channels\n", channel.Name)
 	}
-
-	return nil
 }
 
-func (s *Stats) HasChannel(channel []byte) bool {
-	channel := s.FindChannel(channel)
+func (s *Stats) ListChannels() {
+	fmt.Printf("\nListing Channels:\n")
+	for key, channel := range s.channels {
+		fmt.Printf("Channel (%s) Name: %s\n", key, channel.GetName())
+	}
+}
+
+func (s *Stats) HasChannelByName(name []byte) bool {
+	channel_name := string(name)
+	channel := s.channels[channel_name]
 
 	return channel != nil
+}
+
+func (s *Stats) HasChannelByChannel(channel *Channel) bool {
+	return s.HasChannelByName(channel.Name)
 }
