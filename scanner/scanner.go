@@ -39,14 +39,10 @@ func ParseJoin(irc_line []byte) (*stats.User, *stats.Channel) {
     matches[n1[i]] = n
   }
 
-  user := stats.User{
-    Name: matches["name"],
-    Hostmask: matches["hostmask"],
-  }
+  user := stats.NewUser(matches["name"], matches["hostmask"])
+  channel := stats.NewChannel(matches["channel"])
 
-  channel := *stats.NewChannel(matches["channel"])
-
-  return &user, &channel
+  return user, channel
 }
 
 // ParseLine parses a single line of IRC directly from a socket.
@@ -67,6 +63,7 @@ func ParseLine(s *stats.Stats, irclogline []byte) error {
       user, channel := ParseJoin(irclogline)
       fmt.Printf("%s\n", irclogline)
       fmt.Printf("username: %s\nhostmask: %s\nchannel: %s\n", user.Name, user.Hostmask, channel.Name)
+      s.AddUser(user)
       s.AddChannel(channel)
     case "<--":
       // someone has quit.
