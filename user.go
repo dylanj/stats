@@ -13,30 +13,30 @@ type User struct {
 }
 
 func NewUser(name []byte, hostmask []byte) *User {
-  user := User {
-    Name: make([]byte, NameLength),
-    Hostmask: make([]byte, HostmaskLength),
-    Messages: make([]*Message, 5),
-  }
+	user := User{
+		Name:     make([]byte, NameLength),
+		Hostmask: make([]byte, HostmaskLength),
+		Messages: make([]*Message, 5),
+	}
 
-  copy(user.Name, name)
-  copy(user.Hostmask, hostmask)
+	copy(user.Name, name)
+	copy(user.Hostmask, hostmask)
 
-  return &user
+	return &user
 }
 
 func (u *User) AddMessage(m []byte, c *Channel) *Message {
-  message := NewMessage(m)
-  message.User = u
-  message.Channel = c
+	message := NewMessage(m)
+	message.User = u
+	message.Channel = c
 
-  u.Messages = append(u.Messages, message)
+	u.Messages = append(u.Messages, message)
 
-  return message
+	return message
 }
 
 func (u *User) ListMessages() {
-  for _, val := range(u.Messages) {
-    val.Print()
-  }
+	for _, val := range u.Messages {
+		val.Print()
+	}
 }

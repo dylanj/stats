@@ -30,6 +30,6 @@ func (c *Channel) GetName() string {
 }
 
 // func (c *Channel) AddUser(u *User) bool {
-//   // s.users = append(u, 
+//   // s.users = append(u,
 //   // return
 // }

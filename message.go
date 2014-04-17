@@ -13,17 +13,17 @@ type Message struct {
 }
 
 func NewMessage(message []byte) *Message {
-  m := Message{
-    Message: make([]byte, MessageLength),
-  }
+	m := Message{
+		Message: make([]byte, MessageLength),
+	}
 
-  copy(m.Message, message)
+	copy(m.Message, message)
 
-  return &m
+	return &m
 }
 
 func (m *Message) Print() {
-  fmt.Printf("(%s)\n", m.User.Name)
-  fmt.Printf("(%s)\n", m.Message)
-  fmt.Printf("(%s)\n", m.Channel.Name)
+	fmt.Printf("(%s)\n", m.User.Name)
+	fmt.Printf("(%s)\n", m.Message)
+	fmt.Printf("(%s)\n", m.Channel.Name)
 }
