@@ -8,8 +8,8 @@ type Channel struct {
 	Topic    []byte
 	Joins    int
 	Parts    int
-	Users    []User
-	Messages []Message
+	Users    []*User
+	Messages []*Message
 }
 
 func NewChannel(name []byte) *Channel {
@@ -28,3 +28,8 @@ func NewChannel(name []byte) *Channel {
 func (c *Channel) GetName() string {
 	return string(c.Name)
 }
+
+// func (c *Channel) AddUser(u *User) bool {
+//   // s.users = append(u, 
+//   // return
+// }

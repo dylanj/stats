@@ -23,6 +23,8 @@ func ParseFile(filename string) error {
   }
 
   stats.ListChannels()
+  stats.ListUsers()
+ fmt.Printf("number of messages in stats: %i\n", stats.MessageCount())
 
   return errors.New("gi?")
 }
@@ -45,12 +47,30 @@ func ParseJoin(irc_line []byte) (*stats.User, *stats.Channel) {
   return user, channel
 }
 
+func ParseMessage(s *stats.Stats, matches map[string][]byte) (*stats.Message) {
+  user_name := matches["cmd"]
+
+  user := s.GetUser(user_name)
+  channel := s.GetChannel("#deviate2")
+
+  s.ListChannels()
+
+  if channel == nil {
+    fmt.Printf("channl is nil\n")
+  }
+  if user == nil {
+    fmt.Printf("channl is nil\n")
+  }
+
+  return user.AddMessage(matches["message"], channel)
+}
+
 // ParseLine parses a single line of IRC directly from a socket.
 // Will parse into irc.Message events using ultimateq's parse package (or write custom code)
-func ParseLine(s *stats.Stats, irclogline []byte) error {
+func ParseLine(s *stats.Stats, line []byte) error {
   messageRegex := regexp.MustCompile(`(?P<date>.*)\t(?P<cmd>.*)\t(?P<message>.*)`)
   n1 := messageRegex.SubexpNames()
-  r2 := messageRegex.FindAllSubmatch(irclogline, -1)[0]
+  r2 := messageRegex.FindAllSubmatch(line, -1)[0]
 
   matches := make(map[string][]byte)
 
@@ -60,8 +80,8 @@ func ParseLine(s *stats.Stats, irclogline []byte) error {
 
   switch(string(matches["cmd"])) {
     case "-->":
-      user, channel := ParseJoin(irclogline)
-      fmt.Printf("%s\n", irclogline)
+      user, channel := ParseJoin(line)
+      fmt.Printf("%s\n", line)
       fmt.Printf("username: %s\nhostmask: %s\nchannel: %s\n", user.Name, user.Hostmask, channel.Name)
       s.AddUser(user)
       s.AddChannel(channel)
@@ -70,6 +90,10 @@ func ParseLine(s *stats.Stats, irclogline []byte) error {
     case "--":
       // some kind of message"
     default:
+      message := ParseMessage(s, matches)
+      if message != nil { 
+        message.Print()
+      }
       //fmt.Printf("%s: %s\n", matches["cmd"], matches["message"])
   }
 
