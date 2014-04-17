@@ -66,15 +66,19 @@ func (s *Stats) ListUsers() {
 }
 
 func (s *Stats) GetChannel(name string) *Channel {
-	fmt.Printf("looking for %s in channels\n", name)
-	s.ListChannels()
-	fmt.Printf("end of channels")
-
-	channel := s.channels["deviate2"]
-	if channel == nil {
-		fmt.Printf("channel is _REALLY_ nil\n")
+	channel, ok := s.channels[name]
+	if ok {
+		fmt.Printf("Found Channel: #%s\n", name)
+	} else {
+		fmt.Printf("Count not find channel: %s\n", name)
 	}
-	fmt.Printf("name: %s\n", channel.Name)
+
+	fmt.Printf("channels\n")
+	for k, v := range s.channels {
+		fmt.Printf("%s = %v\n", k, v)
+	}
+
+	fmt.Printf("name: %s\n", string(channel.Name))
 
 	return channel
 }

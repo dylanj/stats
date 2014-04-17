@@ -51,7 +51,7 @@ func ParseMessage(s *stats.Stats, matches map[string][]byte) (*stats.Message) {
   user_name := matches["cmd"]
 
   user := s.GetUser(user_name)
-  channel := s.GetChannel("#deviate2")
+  channel := s.GetChannel(string("#deviate"))
 
   s.ListChannels()
 

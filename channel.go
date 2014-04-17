@@ -1,5 +1,7 @@
 package stats
 
+import "bytes"
+
 const ChannelLength = 32
 const TopicLength = 256
 
@@ -27,6 +29,15 @@ func NewChannel(name []byte) *Channel {
 
 func (c *Channel) GetName() string {
 	return string(c.Name)
+}
+
+func (c *Channel) String() string {
+	var buffer bytes.Buffer
+
+	buffer.WriteString("Channel: ")
+	buffer.WriteString(string(c.Name))
+
+	return buffer.String()
 }
 
 // func (c *Channel) AddUser(u *User) bool {
