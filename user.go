@@ -1,26 +1,32 @@
 package stats
 
-// import "container/list"
-//import "fmt"
-
-const NameLength = 32
-const HostmaskLength = 128
+import "bytes"
+import "strconv"
 
 type User struct {
-	Name     []byte
-	Hostmask []byte
+	Name     string
+	Hostmask string
 	Messages []*Message
 }
 
-func NewUser(name []byte, hostmask []byte) *User {
-	user := User{
-		Name:     make([]byte, NameLength),
-		Hostmask: make([]byte, HostmaskLength),
-		Messages: make([]*Message, 5),
-	}
+func (u *User) String() string {
+	var buffer bytes.Buffer
 
-	copy(user.Name, name)
-	copy(user.Hostmask, hostmask)
+	buffer.WriteString("User: ")
+	buffer.WriteString(u.Name)
+	buffer.WriteString(" Messages:(")
+	buffer.WriteString(strconv.Itoa(len(u.Messages)))
+	buffer.WriteString(")")
+
+	return buffer.String()
+}
+
+func NewUser(name string, hostmask string) *User {
+	user := User{
+		Name:     name,
+		Hostmask: hostmask,
+		Messages: make([]*Message, 0, 10),
+	}
 
 	return &user
 }
@@ -29,6 +35,8 @@ func (u *User) AddMessage(m []byte, c *Channel) *Message {
 	message := NewMessage(m)
 	message.User = u
 	message.Channel = c
+
+	c.AddMessage(message)
 
 	u.Messages = append(u.Messages, message)
 

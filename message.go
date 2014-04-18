@@ -3,21 +3,17 @@ package stats
 import "time"
 import "fmt"
 
-const MessageLength = 512
-
 type Message struct {
 	Date    time.Time
 	User    *User
 	Channel *Channel
-	Message []byte
+	Message string
 }
 
 func NewMessage(message []byte) *Message {
 	m := Message{
-		Message: make([]byte, MessageLength),
+		Message: string(message),
 	}
-
-	copy(m.Message, message)
 
 	return &m
 }

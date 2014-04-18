@@ -1,11 +1,15 @@
 package stats
 
 import "fmt"
+import "bytes"
+import "encoding/gob"
+import "log"
+import "io/ioutil"
 
 type Stats struct {
 	channels map[string]*Channel
 	users    map[string]*User
-	messages []*Message
+	Messages []*Message
 }
 
 func NewStats() *Stats {
@@ -16,11 +20,11 @@ func NewStats() *Stats {
 }
 
 func (s *Stats) AddMessage(message *Message) {
-	s.messages = append(s.messages, message)
+	s.Messages = append(s.Messages, message)
 }
 
 func (s *Stats) MessageCount() int {
-	return len(s.messages)
+	return len(s.Messages)
 }
 
 func (s *Stats) AddChannel(channel *Channel) {
@@ -37,59 +41,63 @@ func (s *Stats) AddUser(user *User) {
 	if s.users[name] == nil {
 		fmt.Printf("Adding %s to users\n", user.Name)
 		s.users[name] = user
-	} else {
-		fmt.Printf("Already have user\n")
 	}
 }
 
-func (s *Stats) GetUser(name []byte) *User {
-	u := s.users[string(name)]
+func (s *Stats) GetUser(name string) *User {
+	u := s.users[name]
 	if u != nil {
 		return u
 	} else {
-		return NewUser(name, nil)
+		return NewUser(name, "")
 	}
 }
 
 func (s *Stats) ListChannels() {
 	fmt.Printf("\nListing Channels:\n")
-	for key, channel := range s.channels {
-		fmt.Printf("Channel (%s) Name: %s\n", key, channel.GetName())
+	for _, c := range s.channels {
+		fmt.Printf("%s\n", c)
 	}
 }
 
 func (s *Stats) ListUsers() {
 	fmt.Printf("\nListing Users:\n")
-	for _, user := range s.users {
-		fmt.Printf("User: %s - Mask: %s\n", user.Name, user.Hostmask)
+	for _, u := range s.users {
+		fmt.Printf("%s\n", u)
 	}
 }
 
 func (s *Stats) GetChannel(name string) *Channel {
-	channel, ok := s.channels[name]
-	if ok {
-		fmt.Printf("Found Channel: #%s\n", name)
-	} else {
-		fmt.Printf("Count not find channel: %s\n", name)
-	}
-
-	fmt.Printf("channels\n")
-	for k, v := range s.channels {
-		fmt.Printf("%s = %v\n", k, v)
-	}
-
-	fmt.Printf("name: %s\n", string(channel.Name))
+	channel := s.channels[name]
 
 	return channel
 }
 
-func (s *Stats) HasChannelByName(name []byte) bool {
-	channel_name := string(name)
-	channel := s.channels[channel_name]
+func (s *Stats) HasChannelByName(name string) bool {
+	channel := s.channels[name]
 
 	return channel != nil
 }
 
 func (s *Stats) HasChannelByChannel(channel *Channel) bool {
 	return s.HasChannelByName(channel.Name)
+}
+
+func (s *Stats) Information() {
+	s.ListChannels()
+	s.ListUsers()
+
+	fmt.Printf("Number of messages in stats: %d\n", s.MessageCount())
+}
+
+func (s *Stats) ExportData() {
+	var buffer bytes.Buffer
+	enc := gob.NewEncoder(&buffer)
+	err := enc.Encode(s.Messages)
+
+	if err != nil {
+		log.Fatal("encode error:", err)
+	}
+
+	ioutil.WriteFile("data.db", buffer.Bytes(), 0x644)
 }
