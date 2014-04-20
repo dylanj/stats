@@ -1,7 +1,6 @@
 package stats
 
-import "bytes"
-import "strconv"
+import "fmt"
 
 type Channel struct {
 	Name     string
@@ -28,15 +27,7 @@ func (c *Channel) GetName() string {
 }
 
 func (c *Channel) String() string {
-	var buffer bytes.Buffer
-
-	buffer.WriteString("Channel: ")
-	buffer.WriteString(c.Name)
-	buffer.WriteString(" Messages: (")
-	buffer.WriteString(strconv.Itoa(len(c.Messages)))
-	buffer.WriteString(")")
-
-	return buffer.String()
+  return fmt.Sprintf("Channel: %s Messages:(%d)", c.Name, len(c.Messages))
 }
 
 func (c *Channel) AddMessage(m *Message) {

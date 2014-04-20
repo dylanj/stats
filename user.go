@@ -1,7 +1,6 @@
 package stats
 
-import "bytes"
-import "strconv"
+import "fmt"
 
 type User struct {
 	Name     string
@@ -10,15 +9,7 @@ type User struct {
 }
 
 func (u *User) String() string {
-	var buffer bytes.Buffer
-
-	buffer.WriteString("User: ")
-	buffer.WriteString(u.Name)
-	buffer.WriteString(" Messages:(")
-	buffer.WriteString(strconv.Itoa(len(u.Messages)))
-	buffer.WriteString(")")
-
-	return buffer.String()
+  return fmt.Sprintf("User: %s Messages:(%d)", u.Name, len(u.Messages))
 }
 
 func NewUser(name string, hostmask string) *User {
