@@ -45,8 +45,7 @@ func (s *Stats) AddUser(user *User) {
 }
 
 func (s *Stats) GetUser(name string) *User {
-	u := s.users[name]
-	if u != nil {
+	u, ok := s.users[name]; if ok {
 		return u
 	} else {
 		return NewUser(name, "")
