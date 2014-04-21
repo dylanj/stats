@@ -18,8 +18,6 @@ func NewMessage(message []byte) *Message {
 	return &m
 }
 
-func (m *Message) Print() {
-	fmt.Printf("(%s)\n", m.User.Name)
-	fmt.Printf("(%s)\n", m.Message)
-	fmt.Printf("(%s)\n", m.Channel.Name)
+func (m *Message) String() string {
+  return fmt.Sprintf("%s (%s): %s\n", m.User.Name, m.Channel.Name, m.Message)
 }

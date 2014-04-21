@@ -35,7 +35,7 @@ func (u *User) AddMessage(m []byte, c *Channel) *Message {
 }
 
 func (u *User) ListMessages() {
-	for _, val := range u.Messages {
-		val.Print()
+	for _, m := range u.Messages {
+		fmt.Printf("%s", m)
 	}
 }
