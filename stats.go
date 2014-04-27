@@ -5,6 +5,7 @@ import "bytes"
 import "encoding/gob"
 import "log"
 import "io/ioutil"
+import "os"
 
 type Stats struct {
 	Channels map[uint]*Channel
@@ -101,16 +102,12 @@ func (s *Stats) NewNetwork(name string) *Network {
 	return network
 }
 
-func (s *Stats) ImportData(filename string) *Stats {
-	return nil
-}
-
 func (s *Stats) MessageCount() int {
 	return len(s.Messages)
 }
 
 func (s *Stats) ListChannels() {
-	fmt.Printf("\nListing Channels:\n")
+	fmt.Printf("\nListing Channels: (%d)\n", len(s.Channels))
 	for id, c := range s.Channels {
 		fmt.Printf("[%d] %s\n", id, c)
 	}
@@ -140,4 +137,15 @@ func (s *Stats) ExportData() {
 	}
 
 	ioutil.WriteFile("data.db", buffer.Bytes(), 0x644)
+}
+
+func ImportData() *Stats {
+  file,_ := os.Open("data.db")
+
+  decoder := gob.NewDecoder(file)
+  var stats Stats
+
+  decoder.Decode(&stats)
+
+  return &stats
 }

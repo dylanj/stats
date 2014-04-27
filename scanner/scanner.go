@@ -26,6 +26,8 @@ func ParseFile(network_name string, channel_name string, filename string) error 
 	file, _ := os.Open(filename)
 	scanner := bufio.NewScanner(file)
 
+  var stats2 = stats.ImportData()
+
 	var stats = stats.NewStats()
 	var network = stats.GetNetwork(network_name)
 	var channel = network.GetChannel(channel_name)
@@ -37,7 +39,7 @@ func ParseFile(network_name string, channel_name string, filename string) error 
     //fmt.Printf("line %d\n", i)
 	}
 
-	stats.Information()
+	stats2.Information()
 	stats.ExportData()
 
 	return errors.New("gi?")
