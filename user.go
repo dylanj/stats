@@ -3,39 +3,37 @@ package stats
 import "fmt"
 
 type User struct {
-	Name     string
-	Hostmask string
-	Messages []*Message
+	ID         uint
+	Name       string
+	Hostmask   string
+	NetworkID  uint
+	MessageIDs []uint
+	JoinCount  uint
+	PartCount  uint
 }
 
 func (u *User) String() string {
-  return fmt.Sprintf("User: %s Messages:(%d)", u.Name, len(u.Messages))
+	return fmt.Sprintf("User: %s Messages:(%d)", u.Name, len(u.MessageIDs))
 }
 
 func NewUser(name string, hostmask string) *User {
 	user := User{
-		Name:     name,
-		Hostmask: hostmask,
-		Messages: make([]*Message, 0, 10),
+		Name:       string(name),
+		Hostmask:   hostmask,
+		MessageIDs: make([]uint, 10),
+		JoinCount:  0,
+		PartCount:  0,
 	}
 
 	return &user
 }
 
-func (u *User) AddMessage(m []byte, c *Channel) *Message {
-	message := NewMessage(m)
-	message.User = u
-	message.Channel = c
-
-	c.AddMessage(message)
-
-	u.Messages = append(u.Messages, message)
-
-	return message
+func (u *User) AddMessageID(m_id uint) {
+	u.MessageIDs = append(u.MessageIDs, m_id)
 }
 
 func (u *User) ListMessages() {
-	for _, m := range u.Messages {
-		fmt.Printf("%s", m)
+	for id, m := range u.MessageIDs {
+		fmt.Printf("[%d] %s", id, m)
 	}
 }

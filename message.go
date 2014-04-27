@@ -4,10 +4,11 @@ import "time"
 import "fmt"
 
 type Message struct {
-	Date    time.Time
-	User    *User
-	Channel *Channel
-	Message string
+	ID        uint
+	Date      time.Time
+	UserID    uint
+	ChannelID uint
+	Message   string
 }
 
 func NewMessage(message []byte) *Message {
@@ -19,5 +20,6 @@ func NewMessage(message []byte) *Message {
 }
 
 func (m *Message) String() string {
-  return fmt.Sprintf("%s (%s): %s\n", m.User.Name, m.Channel.Name, m.Message)
+	//return fmt.Sprintf("%s (%s): %s\n", m.User.Name, m.Channel.Name, m.Message)
+	return fmt.Sprintf("hello")
 }

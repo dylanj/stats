@@ -7,79 +7,120 @@ import "log"
 import "io/ioutil"
 
 type Stats struct {
-	channels map[string]*Channel
-	users    map[string]*User
-	Messages []*Message
+	Channels map[uint]*Channel
+	Messages map[uint]*Message
+	Networks map[uint]*Network
+	Users    map[uint]*User
+
+	network_id_by_name map[string]uint
+	channel_id_by_name map[string]uint
+	user_id_by_name    map[string]uint
+
+	NetworkIDCount uint
+	MessageIDCount uint
+	ChannelIDCount uint
+	UserIDCount    uint
+}
+
+func (s *Stats) AddUser(u *User) {
+	id := s.UserIDCount
+	s.UserIDCount++
+
+	u.ID = id
+	s.Users[id] = u
+}
+
+func (s *Stats) AddMessage(m *Message) {
+	id := s.MessageIDCount
+	s.MessageIDCount++
+
+	channel := s.Channels[m.ChannelID]
+	user := s.Users[m.UserID]
+	network := s.Networks[channel.ID]
+
+	m.ID = id
+
+	s.Messages[id] = m
+
+	channel.AddMessageID(id)
+	network.AddMessageID(id)
+	user.AddMessageID(id)
 }
 
 func NewStats() *Stats {
+	// load from stats.db
 	return &Stats{
-		channels: make(map[string]*Channel),
-		users:    make(map[string]*User),
+		Channels: make(map[uint]*Channel),
+		Messages: make(map[uint]*Message),
+		Networks: make(map[uint]*Network),
+		Users:    make(map[uint]*User),
+
+		network_id_by_name: make(map[string]uint),
+		channel_id_by_name: make(map[string]uint),
+		user_id_by_name:    make(map[string]uint),
+
+		NetworkIDCount: 0,
+		MessageIDCount: 0,
+		ChannelIDCount: 0,
+		UserIDCount:    0,
 	}
 }
 
-func (s *Stats) AddMessage(message *Message) {
-	s.Messages = append(s.Messages, message)
+func (s *Stats) GetNetworkByID(id uint) *Network {
+	return s.Networks[id]
+}
+
+func (s *Stats) GetNetwork(name string) *Network {
+	id, ok := s.network_id_by_name[name]
+	if ok {
+		return s.Networks[id]
+	} else {
+		return s.NewNetwork(name)
+	}
+}
+
+func (s *Stats) NewNetwork(name string) *Network {
+	id := s.NetworkIDCount
+	s.NetworkIDCount++
+
+	network := &Network{
+		Name:       name,
+		ID:         id,
+		stats:      s,
+		ChannelIDs: make([]uint, 10),
+		UserIDs:    make([]uint, 10),
+		MessageIDs: make([]uint, 10),
+
+		channels: make(map[string]*Channel),
+		users:    make(map[string]*User),
+	}
+
+	s.Networks[id] = network
+	s.network_id_by_name[name] = id
+
+	return network
+}
+
+func (s *Stats) ImportData(filename string) *Stats {
+	return nil
 }
 
 func (s *Stats) MessageCount() int {
 	return len(s.Messages)
 }
 
-func (s *Stats) AddChannel(channel *Channel) {
-	if !s.HasChannelByChannel(channel) {
-		fmt.Printf("Adding %s to Channels\n", channel.Name)
-		s.channels[string(channel.Name)] = channel
-	} else {
-		fmt.Printf("Already have %s in list of channels\n", channel.Name)
-	}
-}
-
-func (s *Stats) AddUser(user *User) {
-	name := string(user.Name)
-	if s.users[name] == nil {
-		fmt.Printf("Adding %s to users\n", user.Name)
-		s.users[name] = user
-	}
-}
-
-func (s *Stats) GetUser(name string) *User {
-	u, ok := s.users[name]; if ok {
-		return u
-	} else {
-		return NewUser(name, "")
-	}
-}
-
 func (s *Stats) ListChannels() {
 	fmt.Printf("\nListing Channels:\n")
-	for _, c := range s.channels {
-		fmt.Printf("%s\n", c)
+	for id, c := range s.Channels {
+		fmt.Printf("[%d] %s\n", id, c)
 	}
 }
 
 func (s *Stats) ListUsers() {
 	fmt.Printf("\nListing Users:\n")
-	for _, u := range s.users {
-		fmt.Printf("%s\n", u)
+	for id, u := range s.Users {
+		fmt.Printf("[%d] %s\n", id, u)
 	}
-}
-
-func (s *Stats) GetChannel(name string) *Channel {
-	channel := s.channels[name]
-
-	return channel
-}
-
-func (s *Stats) HasChannelByName(name string) bool {
-	channel := s.channels[name]
-
-	return channel != nil
-}
-
-func (s *Stats) HasChannelByChannel(channel *Channel) bool {
-	return s.HasChannelByName(channel.Name)
 }
 
 func (s *Stats) Information() {
@@ -92,7 +133,7 @@ func (s *Stats) Information() {
 func (s *Stats) ExportData() {
 	var buffer bytes.Buffer
 	enc := gob.NewEncoder(&buffer)
-	err := enc.Encode(s.Messages)
+	err := enc.Encode(s)
 
 	if err != nil {
 		log.Fatal("encode error:", err)
