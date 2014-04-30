@@ -1,6 +1,6 @@
 package main
 
-import "stats"
+import "github.com/DylanJ/stats"
 import "encoding/json"
 import "sort"
 

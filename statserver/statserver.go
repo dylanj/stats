@@ -7,7 +7,7 @@ import "fmt"
 import "errors"
 
 var port = ":8080"
-var local_asset_path = "./assets"
+var local_asset_path = "./html/assets"
 var s *stats.Stats
 
 func main() {
@@ -20,10 +20,10 @@ func main() {
 
 func web_api(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, stats.UserStatsJSON(s.Users))
+	fmt.Fprintf(w, UserStatsJSON(s))
 }
 func web_root(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./index.html")
+	http.ServeFile(w, r, "./html/index.html")
 }
 
 //import "github.com/aarondl/ultimateq/parse"

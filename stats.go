@@ -1,13 +1,14 @@
 package stats
 
-import "fmt"
-import "bytes"
-import "encoding/gob"
-import "log"
-import "io/ioutil"
-import "os"
-import "math/rand"
-import "stats/json"
+import (
+  "fmt"
+  "bytes"
+  "encoding/gob"
+  "log"
+  "io/ioutil"
+  "os"
+  "math/rand"
+)
 
 type Stats struct {
 	Channels map[uint]*Channel
@@ -165,8 +166,4 @@ func ImportData() *Stats {
   decoder.Decode(&stats)
 
   return &stats
-}
-
-func (s *Stats) UserStatsJSON() string {
-  return json.UserStatsJSON(s)
 }

@@ -19,7 +19,7 @@ func (n *Network) GetUser(name string) *User {
 	if ok {
 		return user
 	} else {
-		return n.NewUser(name)
+		return n.AddUser(name)
 	}
 }
 
@@ -29,11 +29,11 @@ func (n *Network) GetChannel(name string) *Channel {
 	if ok {
 		return channel
 	} else {
-		return n.NewChannel(name)
+		return n.AddChannel(name)
 	}
 }
 
-func (n *Network) NewUser(name string) *User {
+func (n *Network) AddUser(name string) *User {
 	user := NewUser(name, "")
 
 	n.users[name] = user
@@ -43,19 +43,12 @@ func (n *Network) NewUser(name string) *User {
 	return user
 }
 
-func (n *Network) NewChannel(name string) *Channel {
+func (n *Network) AddChannel(name string) *Channel {
 	id := n.stats.ChannelIDCount
 	n.stats.ChannelIDCount++
 
-	channel := &Channel{
-		ID:         id,
-		Name:       name,
-		JoinCount:  0,
-		PartCount:  0,
-		UserIDs:    make([]uint, 0),
-		MessageIDs: make([]uint, 0),
-		NetworkID:  n.ID,
-	}
+	channel := NewChannel(name, n)
+	channel.ID = id
 
 	n.ChannelIDs = append(n.ChannelIDs, channel.ID)
 	n.stats.Channels[id] = channel
