@@ -6,6 +6,8 @@ import "encoding/gob"
 import "log"
 import "io/ioutil"
 import "os"
+import "math/rand"
+import "stats/json"
 
 type Stats struct {
 	Channels map[uint]*Channel
@@ -88,9 +90,9 @@ func (s *Stats) NewNetwork(name string) *Network {
 		Name:       name,
 		ID:         id,
 		stats:      s,
-		ChannelIDs: make([]uint, 10),
-		UserIDs:    make([]uint, 10),
-		MessageIDs: make([]uint, 10),
+		ChannelIDs: make([]uint, 0),
+		UserIDs:    make([]uint, 0),
+		MessageIDs: make([]uint, 0),
 
 		channels: make(map[string]*Channel),
 		users:    make(map[string]*User),
@@ -127,6 +129,21 @@ func (s *Stats) Information() {
 	fmt.Printf("Number of messages in stats: %d\n", s.MessageCount())
 }
 
+func (s *Stats) RandomMessageForUser(u *User) *Message {
+  count := len(u.MessageIDs)
+  var m *Message
+
+  for i := 0; i < 3; i++ {
+    id := u.MessageIDs[rand.Intn(count)]
+    m = s.Messages[id]
+    if ( len(m.Message) > 0 ){
+      return m
+    }
+  }
+
+  return m
+}
+
 func (s *Stats) ExportData() {
 	var buffer bytes.Buffer
 	enc := gob.NewEncoder(&buffer)
@@ -148,4 +165,8 @@ func ImportData() *Stats {
   decoder.Decode(&stats)
 
   return &stats
+}
+
+func (s *Stats) UserStatsJSON() string {
+  return json.UserStatsJSON(s)
 }

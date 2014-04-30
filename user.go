@@ -20,7 +20,7 @@ func NewUser(name string, hostmask string) *User {
 	user := User{
 		Name:       string(name),
 		Hostmask:   hostmask,
-		MessageIDs: make([]uint, 10),
+		MessageIDs: make([]uint, 0),
 		JoinCount:  0,
 		PartCount:  0,
 	}
@@ -30,6 +30,10 @@ func NewUser(name string, hostmask string) *User {
 
 func (u *User) AddMessageID(m_id uint) {
 	u.MessageIDs = append(u.MessageIDs, m_id)
+}
+
+func (u *User) MessageCount() int {
+  return len(u.MessageIDs)
 }
 
 func (u *User) ListMessages() {

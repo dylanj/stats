@@ -3,7 +3,7 @@ Zepto(function($) {
   template = $('#template').html()
 
   render_page = function(data) {
-    body.html(Mustache.render(template, data))
+    body.html(Mustache.render(template, {users: data}))
   }
 
   $.ajax({
