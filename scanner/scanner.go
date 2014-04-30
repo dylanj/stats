@@ -6,6 +6,7 @@ import "os"
 import "bufio"
 import "regexp"
 import "errors"
+
 //import "fmt"
 
 func main() {
@@ -26,17 +27,17 @@ func ParseFile(network_name string, channel_name string, filename string) error 
 	file, _ := os.Open(filename)
 	scanner := bufio.NewScanner(file)
 
-  var stats2 = stats.ImportData()
+	var stats2 = stats.ImportData()
 
 	var stats = stats.NewStats()
 	var network = stats.GetNetwork(network_name)
 	var channel = network.GetChannel(channel_name)
 
-  var i = 0;
+	var i = 0
 	for scanner.Scan() {
-    i++
+		i++
 		ParseLine(network, channel, scanner.Bytes())
-    //fmt.Printf("line %d\n", i)
+		//fmt.Printf("line %d\n", i)
 	}
 
 	stats2.Information()
@@ -77,11 +78,11 @@ func ParseMessage(n *stats.Network, c *stats.Channel, matches map[string][]byte)
 		// todo date: ???
 	}
 
-  n.AddMessage(message)
+	n.AddMessage(message)
 }
 
 func ParseLine(n *stats.Network, c *stats.Channel, line []byte) error {
-  //messageRegex := regexp.MustCompile(`(?P<date>.*)\t(?P<cmd>.*)\t(?P<message>.*)`)
+	//messageRegex := regexp.MustCompile(`(?P<date>.*)\t(?P<cmd>.*)\t(?P<message>.*)`)
 	messageRegex := regexp.MustCompile(`(?P<date>[0-9:\- ]*)\t(?P<cmd>[\w@+&]*)\t{1}(?P<message>.*)`)
 	n1 := messageRegex.SubexpNames()
 	r2 := messageRegex.FindSubmatch(line)
@@ -91,22 +92,22 @@ func ParseLine(n *stats.Network, c *stats.Channel, line []byte) error {
 		matches[n1[i]] = r2[i]
 	}
 
-//  fmt.Printf("match: [%s]\n", matches["cmd"])
+	//  fmt.Printf("match: [%s]\n", matches["cmd"])
 	switch string(matches["cmd"]) {
 	case "-->":
 		ParseJoin(n, line)
-    break
+		break
 	case "<--":
 		// someone has quit.
-    break
+		break
 	case "--":
 		// some kind of message.
-    break
-  case " *":
-    break
+		break
+	case " *":
+		break
 	default:
 		ParseMessage(n, c, matches)
-    break
+		break
 	}
 
 	return errors.New("da")

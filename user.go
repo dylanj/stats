@@ -25,16 +25,6 @@ func NewUser(id uint, network *Network, nick string) *User {
 	return &user
 }
 
-func (u *User) AddMessageID(m_id uint) {
+func (u *User) addMessageID(m_id uint) {
 	u.MessageIDs = append(u.MessageIDs, m_id)
-}
-
-func (u *User) MessageCount() int {
-	return len(u.MessageIDs)
-}
-
-func (u *User) ListMessages() {
-	for id, m := range u.MessageIDs {
-		fmt.Printf("[%d] %s", id, m)
-	}
 }
