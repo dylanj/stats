@@ -4,25 +4,23 @@ import "fmt"
 
 type User struct {
 	ID         uint
-	Name       string
+	Nick       string
 	Hostmask   string
 	NetworkID  uint
 	MessageIDs []uint
-	JoinCount  uint
-	PartCount  uint
 }
 
 func (u *User) String() string {
-	return fmt.Sprintf("User: %s Messages:(%d)", u.Name, len(u.MessageIDs))
+	return fmt.Sprintf("User: %s Messages:(%d)", u.Nick, len(u.MessageIDs))
 }
 
-func NewUser(name string, hostmask string) *User {
+func NewUser(id uint, network *Network, nick string, hostmask string) *User {
 	user := User{
-		Name:       string(name),
+		ID:         id,
+		Nick:       string(nick),
 		Hostmask:   hostmask,
+		NetworkID:  network.ID,
 		MessageIDs: make([]uint, 0),
-		JoinCount:  0,
-		PartCount:  0,
 	}
 
 	return &user
@@ -33,7 +31,7 @@ func (u *User) AddMessageID(m_id uint) {
 }
 
 func (u *User) MessageCount() int {
-  return len(u.MessageIDs)
+	return len(u.MessageIDs)
 }
 
 func (u *User) ListMessages() {

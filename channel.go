@@ -13,7 +13,7 @@ type Channel struct {
 	NetworkID  uint
 }
 
-func NewChannel(name string, network *Network) *Channel {
+func newChannel(id uint, network *Network, name string) *Channel {
 	return &Channel{
 		Name:       name,
 		JoinCount:  0,
@@ -24,18 +24,13 @@ func NewChannel(name string, network *Network) *Channel {
 	}
 }
 
-// GetName return the name of the IRC Channel.
-func (c *Channel) GetName() string {
-	return c.Name
-}
-
 // String returns a the name of the channel and the number of messages inside.
 func (c *Channel) String() string {
 	return fmt.Sprintf("Channel: %s Messages:(%d)", c.Name, len(c.MessageIDs))
 }
 
 // AddMessageID adds a message id to the list of message ids.
-func (c *Channel) AddMessageID(mid uint) {
+func (c *Channel) addMessageID(mid uint) {
 	c.MessageIDs = append(c.MessageIDs, mid)
 }
 

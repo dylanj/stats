@@ -1,13 +1,31 @@
 package stats
 
 import (
-  "fmt"
-  "bytes"
-  "encoding/gob"
-  "log"
-  "io/ioutil"
-  "os"
-  "math/rand"
+	"bytes"
+	"encoding/gob"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"math/rand"
+	"os"
+	"time"
+)
+
+// MsgKind is the type of message
+type MsgKind string
+
+// These are the various message Kinds
+const (
+	// Msg is for PRIVMSG and NOTICE messages
+	Msg MsgKind = "PRIVMSG"
+	// Part is for ...
+	Part MsgKind = "PART"
+	// Join is for ...
+	Join MsgKind = "JOIN"
+	// Quit is for ...
+	Quit MsgKind = "QUIT"
+	// Kick is for ...
+	Kick MsgKind = "KICK"
 )
 
 type Stats struct {
@@ -26,29 +44,61 @@ type Stats struct {
 	UserIDCount    uint
 }
 
-func (s *Stats) AddUser(u *User) {
+func (s *Stats) addChannel(n *Network, name string) *Channel {
+	id := n.stats.ChannelIDCount
+	n.stats.ChannelIDCount++
+
+	c := newChannel(id, n, name)
+
+	s.channel_id_by_name[c.Name] = c.ID
+	s.Channels[c.ID] = c
+
+	n.AddChannel(c)
+
+	return c
+}
+
+func (s *Stats) addUser(n *Network, nick string) *User {
 	id := s.UserIDCount
 	s.UserIDCount++
 
-	u.ID = id
-	s.Users[id] = u
+	u := NewUser(id, n, nick, "")
+
+	s.user_id_by_name[u.Nick] = u.ID
+	s.Users[id] = NewUser(id, n, nick, hostmask)
+
+	n.AddUser(u)
+
+	return u
 }
 
-func (s *Stats) AddMessage(m *Message) {
+func (s *Stats) AddMessage(kind MsgKind, network string, channel string, hostmask string, date time.Time, message string) {
+
+	n := s.getNetwork(network)
+
+	c := s.getChannel(n, channel)
+	u := s.getUser(n, hostmask)
+
+	s.addMessage(n, c, u, date, message)
+}
+
+func (s *Stats) addMessage(n *Network, c *Channel, u *User, d time.Time, m string) {
 	id := s.MessageIDCount
 	s.MessageIDCount++
 
-	channel := s.Channels[m.ChannelID]
-	user := s.Users[m.UserID]
-	network := s.Networks[channel.ID]
+	message := &Message{
+		ID:        id,
+		Date:      d,
+		UserID:    u.ID,
+		ChannelID: c.ID,
+		Message:   m,
+	}
 
-	m.ID = id
+	s.Messages[id] = message
 
-	s.Messages[id] = m
-
-	channel.AddMessageID(id)
-	network.AddMessageID(id)
-	user.AddMessageID(id)
+	c.addMessageID(id)
+	n.AddMessageID(id)
+	u.AddMessageID(id)
 }
 
 func NewStats() *Stats {
@@ -74,16 +124,31 @@ func (s *Stats) GetNetworkByID(id uint) *Network {
 	return s.Networks[id]
 }
 
-func (s *Stats) GetNetwork(name string) *Network {
-	id, ok := s.network_id_by_name[name]
-	if ok {
-		return s.Networks[id]
+func (s *Stats) getUser(n *Network, name string) *User {
+	if id, ok := s.user_id_by_name[name]; ok {
+		return s.Users[id]
 	} else {
-		return s.NewNetwork(name)
+		return s.addUser(n, name)
 	}
 }
 
-func (s *Stats) NewNetwork(name string) *Network {
+func (s *Stats) getChannel(n *Network, name string) *Channel {
+	if id, ok := s.channel_id_by_name[name]; ok {
+		return s.Channels[id]
+	} else {
+		return s.addChannel(n, name)
+	}
+}
+
+func (s *Stats) getNetwork(name string) *Network {
+	if id, ok := s.network_id_by_name[name]; ok {
+		return s.Networks[id]
+	} else {
+		return s.addNetwork(name)
+	}
+}
+
+func (s *Stats) addNetwork(name string) *Network {
 	id := s.NetworkIDCount
 	s.NetworkIDCount++
 
@@ -131,18 +196,18 @@ func (s *Stats) Information() {
 }
 
 func (s *Stats) RandomMessageForUser(u *User) *Message {
-  count := len(u.MessageIDs)
-  var m *Message
+	count := len(u.MessageIDs)
+	var m *Message
 
-  for i := 0; i < 3; i++ {
-    id := u.MessageIDs[rand.Intn(count)]
-    m = s.Messages[id]
-    if ( len(m.Message) > 0 ){
-      return m
-    }
-  }
+	for i := 0; i < 3; i++ {
+		id := u.MessageIDs[rand.Intn(count)]
+		m = s.Messages[id]
+		if len(m.Message) > 0 {
+			return m
+		}
+	}
 
-  return m
+	return m
 }
 
 func (s *Stats) ExportData() {
@@ -158,12 +223,23 @@ func (s *Stats) ExportData() {
 }
 
 func ImportData() *Stats {
-  file,_ := os.Open("data.db")
+	file, _ := os.Open("data.db")
 
-  decoder := gob.NewDecoder(file)
-  var stats Stats
+	decoder := gob.NewDecoder(file)
+	var stats Stats
 
-  decoder.Decode(&stats)
+	decoder.Decode(&stats)
 
-  return &stats
+	return &stats
+}
+
+// -------- statszy functions
+func (s *Stats) HourlyChart(network string, channel string) [24]int {
+	var chart [24]int
+
+	// for messages := range(s.Messages) {
+	// }
+
+	//BRB water
+	return chart
 }
