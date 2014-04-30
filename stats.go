@@ -15,9 +15,9 @@ type Stats struct {
 	Networks map[uint]*Network
 	Users    map[uint]*User
 
-	network_id_by_name map[string]uint
-	channel_id_by_name map[string]uint
-	user_id_by_name    map[string]uint
+	networkByName map[string]*Network
+	channelByName map[string]*Channel
+	userByName    map[string]*User
 
 	NetworkIDCount uint
 	MessageIDCount uint
@@ -34,9 +34,9 @@ func NewStats() *Stats {
 		Networks: make(map[uint]*Network),
 		Users:    make(map[uint]*User),
 
-		network_id_by_name: make(map[string]uint),
-		channel_id_by_name: make(map[string]uint),
-		user_id_by_name:    make(map[string]uint),
+		networkByName: make(map[string]*Network),
+		channelByName: make(map[string]*Channel),
+		userByName:    make(map[string]*User),
 
 		NetworkIDCount: 0,
 		MessageIDCount: 0,
@@ -62,12 +62,7 @@ func (s *Stats) AddMessage(kind MsgKind, network string, channel string, hostmas
 func (s *Stats) HourlyChart(network string, channel string) ([24]int, bool) {
 	var chart [24]int
 
-	nID, ok := s.network_id_by_name[network]
-	if !ok {
-		return chart, false
-	}
-
-	n, ok := s.Networks[nID]
+	n, ok := s.networkByName[network]
 	if !ok {
 		return chart, false
 	}
@@ -111,7 +106,7 @@ func (s *Stats) addChannel(n *Network, name string) *Channel {
 
 	c := newChannel(id, n, name)
 
-	s.channel_id_by_name[c.Name] = c.ID
+	s.channelByName[c.Name] = c
 	s.Channels[c.ID] = c
 
 	n.addChannel(c)
@@ -125,7 +120,7 @@ func (s *Stats) addUser(n *Network, nick string) *User {
 
 	u := NewUser(id, n, nick)
 
-	s.user_id_by_name[u.Nick] = u.ID
+	s.userByName[u.Nick] = u
 	s.Users[id] = NewUser(id, n, nick)
 
 	n.addUser(u)
@@ -134,24 +129,24 @@ func (s *Stats) addUser(n *Network, nick string) *User {
 }
 
 func (s *Stats) getUser(n *Network, name string) *User {
-	if id, ok := s.user_id_by_name[name]; ok {
-		return s.Users[id]
+	if u, ok := s.userByName[name]; ok {
+		return u
 	} else {
 		return s.addUser(n, name)
 	}
 }
 
 func (s *Stats) getChannel(n *Network, name string) *Channel {
-	if id, ok := s.channel_id_by_name[name]; ok {
-		return s.Channels[id]
+	if c, ok := s.channelByName[name]; ok {
+		return c
 	} else {
 		return s.addChannel(n, name)
 	}
 }
 
 func (s *Stats) getNetwork(name string) *Network {
-	if id, ok := s.network_id_by_name[name]; ok {
-		return s.Networks[id]
+	if n, ok := s.networkByName[name]; ok {
+		return n
 	} else {
 		return s.addNetwork(name)
 	}
@@ -161,7 +156,7 @@ func (s *Stats) addNetwork(name string) *Network {
 	id := s.NetworkIDCount
 	s.NetworkIDCount++
 
-	network := &Network{
+	n := &Network{
 		Name:       name,
 		ID:         id,
 		stats:      s,
@@ -173,10 +168,10 @@ func (s *Stats) addNetwork(name string) *Network {
 		users:    make(map[string]*User),
 	}
 
-	s.Networks[id] = network
-	s.network_id_by_name[name] = id
+	s.Networks[id] = n
+	s.networkByName[name] = n
 
-	return network
+	return n
 }
 
 // Save writes the statistics to data.db.
