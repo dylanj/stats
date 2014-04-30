@@ -13,6 +13,8 @@ type Network struct {
 	stats *Stats
 }
 
+// GetUser returns a user by the name given if it exists, if it doesn't
+// it creates a new User and returns it.
 func (n *Network) GetUser(name string) *User {
 	var user, ok = n.users[name]
 
@@ -23,6 +25,8 @@ func (n *Network) GetUser(name string) *User {
 	}
 }
 
+// GetChannel returns a channel by the name given if it exists, if it doesn't
+// it creates a new Channel and returns it.
 func (n *Network) GetChannel(name string) *Channel {
 	var channel, ok = n.channels[name]
 
@@ -33,6 +37,7 @@ func (n *Network) GetChannel(name string) *Channel {
 	}
 }
 
+// AddUser adds a user by the name to the Network.
 func (n *Network) AddUser(name string) *User {
 	user := NewUser(name, "")
 
@@ -43,6 +48,7 @@ func (n *Network) AddUser(name string) *User {
 	return user
 }
 
+// Adds a channel by the name to the Network.
 func (n *Network) AddChannel(name string) *Channel {
 	id := n.stats.ChannelIDCount
 	n.stats.ChannelIDCount++
