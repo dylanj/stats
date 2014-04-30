@@ -162,35 +162,31 @@ func TestStats_getUser(t *testing.T) {
 	}
 }
 
-// func TestStats_HourlyChart(t *testing.T) {
-// 	t.Parallel()
+func TestStats_HourlyChart(t *testing.T) {
+	t.Parallel()
 
-// 	numMessagesPerHour := 4
+	s := NewStats()
+	n := s.addNetwork(network)
+	c := s.addChannel(n, channel)
+	u := s.addUser(n, nick)
 
-// 	s := NewStats()
-// 	n := s.NewNetwork(network)
-// 	n.AddChannel(channel)
-// 	n.AddUser(nick)
+	for i := 23; i >= 0; i-- {
+		for j := 0; j < i; j++ {
+			date := time.Date(2014, time.April, 29, i, 30, 0, 1, time.UTC)
 
-// 	// for i := 23; i >= 0; i++ {
-// 	// 	for j := 0; j < i; i++ {
-// 	// 		//new msg?
-// 	// 	}
-// 	// }
+			s.addMessage(Msg, n, c, u, date, "nihao")
+		}
+	}
 
-// 	for i := 0; i < numMessagesPerHour*24; i++ {
-// 		m := NewMessageString("hello")
-// 		date := time.Date(2014, time.April, 29, i%24, 30, 0, 1, time.UTC)
-// 		m.Date = date
+	chart, success := s.HourlyChart("test_network", "#test")
 
-// 		s.AddMessage(m)
-// 		//todo add message to channel
-// 	}
+	if !success {
+		t.Errorf("success should be true")
+	}
 
-// 	chart := s.HourlyChart("test_network", "#test")
-// 	for i := 0; i < 24; i++ {
-// 		if chart[i] != numMessagesPerHour {
-// 			t.Error("Hour", i, "Does not have", numMessagesPerHour, "messages.")
-// 		}
-// 	}
-// }
+	for i := 0; i < 24; i++ {
+		if chart[i] != i {
+			t.Errorf("Hour[%d] has %d messages, expected: %d", i, chart[i], i)
+		}
+	}
+}

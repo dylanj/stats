@@ -11,23 +11,6 @@ import (
 	"time"
 )
 
-// MsgKind is the type of message
-type MsgKind string
-
-// These are the various message Kinds
-const (
-	// Msg is for PRIVMSG and NOTICE messages
-	Msg MsgKind = "PRIVMSG"
-	// Part is for ...
-	Part MsgKind = "PART"
-	// Join is for ...
-	Join MsgKind = "JOIN"
-	// Quit is for ...
-	Quit MsgKind = "QUIT"
-	// Kick is for ...
-	Kick MsgKind = "KICK"
-)
-
 type Stats struct {
 	Channels map[uint]*Channel
 	Messages map[uint]*Message
@@ -62,10 +45,10 @@ func (s *Stats) addUser(n *Network, nick string) *User {
 	id := s.UserIDCount
 	s.UserIDCount++
 
-	u := NewUser(id, n, nick, "")
+	u := NewUser(id, n, nick)
 
 	s.user_id_by_name[u.Nick] = u.ID
-	s.Users[id] = NewUser(id, n, nick, hostmask)
+	s.Users[id] = NewUser(id, n, nick)
 
 	n.AddUser(u)
 
@@ -79,10 +62,10 @@ func (s *Stats) AddMessage(kind MsgKind, network string, channel string, hostmas
 	c := s.getChannel(n, channel)
 	u := s.getUser(n, hostmask)
 
-	s.addMessage(n, c, u, date, message)
+	s.addMessage(kind, n, c, u, date, message)
 }
 
-func (s *Stats) addMessage(n *Network, c *Channel, u *User, d time.Time, m string) {
+func (s *Stats) addMessage(k MsgKind, n *Network, c *Channel, u *User, d time.Time, m string) {
 	id := s.MessageIDCount
 	s.MessageIDCount++
 
@@ -92,6 +75,7 @@ func (s *Stats) addMessage(n *Network, c *Channel, u *User, d time.Time, m strin
 		UserID:    u.ID,
 		ChannelID: c.ID,
 		Message:   m,
+		Kind:      k,
 	}
 
 	s.Messages[id] = message
@@ -219,7 +203,7 @@ func (s *Stats) ExportData() {
 		log.Fatal("encode error:", err)
 	}
 
-	ioutil.WriteFile("data.db", buffer.Bytes(), 0x644)
+	ioutil.WriteFile("data.db", buffer.Bytes(), 0644)
 }
 
 func ImportData() *Stats {
@@ -233,13 +217,31 @@ func ImportData() *Stats {
 	return &stats
 }
 
-// -------- statszy functions
-func (s *Stats) HourlyChart(network string, channel string) [24]int {
+// HourlyChart returns an array of integers with the number of messages said each hour
+// in the given channel on the given network.
+// The index of the array is the hour
+func (s *Stats) HourlyChart(network string, channel string) ([24]int, bool) {
 	var chart [24]int
 
-	// for messages := range(s.Messages) {
-	// }
+	nID, ok := s.network_id_by_name[network]
+	if !ok {
+		return chart, false
+	}
 
-	//BRB water
-	return chart
+	n, ok := s.Networks[nID]
+	if !ok {
+		return chart, false
+	}
+
+	c, ok := n.channels[channel]
+	if !ok {
+		return chart, false
+	}
+
+	for _, id := range c.MessageIDs {
+		hour := s.Messages[id].Date.Hour()
+		chart[hour]++
+	}
+
+	return chart, true
 }

@@ -14,11 +14,10 @@ func (u *User) String() string {
 	return fmt.Sprintf("User: %s Messages:(%d)", u.Nick, len(u.MessageIDs))
 }
 
-func NewUser(id uint, network *Network, nick string, hostmask string) *User {
+func NewUser(id uint, network *Network, nick string) *User {
 	user := User{
 		ID:         id,
 		Nick:       string(nick),
-		Hostmask:   hostmask,
 		NetworkID:  network.ID,
 		MessageIDs: make([]uint, 0),
 	}
