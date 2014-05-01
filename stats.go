@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"time"
+
+	"github.com/aarondl/ultimateq/irc"
 )
 
 type Stats struct {
@@ -16,8 +18,6 @@ type Stats struct {
 	Users    map[uint]*User
 
 	networkByName map[string]*Network
-	channelByName map[string]*Channel
-	userByName    map[string]*User
 
 	NetworkIDCount uint
 	MessageIDCount uint
@@ -35,14 +35,35 @@ func NewStats() *Stats {
 		Users:    make(map[uint]*User),
 
 		networkByName: make(map[string]*Network),
-		channelByName: make(map[string]*Channel),
-		userByName:    make(map[string]*User),
 
 		NetworkIDCount: 0,
 		MessageIDCount: 0,
 		ChannelIDCount: 0,
 		UserIDCount:    0,
 	}
+}
+
+// GetNetwork retrieves a network by its name return nil if not found
+func (s *Stats) GetNetwork(network string) *Network {
+	return s.networkByName[network]
+}
+
+// GetChannel retrieves a channel from the specified network by name
+func (s *Stats) GetChannel(network, channel string) *Channel {
+	if n := s.GetNetwork(network); n != nil {
+		return n.channels[channel]
+	}
+
+	return nil
+}
+
+// GetUser retrieves a user from the specified network by name
+func (s *Stats) GetUser(network, nick string) *User {
+	if n := s.GetNetwork(network); n != nil {
+		return n.users[nick]
+	}
+
+	return nil
 }
 
 // AddMessage adds a message to the stats.
@@ -106,7 +127,6 @@ func (s *Stats) addChannel(n *Network, name string) *Channel {
 
 	c := newChannel(id, n, name)
 
-	s.channelByName[c.Name] = c
 	s.Channels[c.ID] = c
 
 	n.addChannel(c)
@@ -120,24 +140,25 @@ func (s *Stats) addUser(n *Network, nick string) *User {
 
 	u := NewUser(id, n, nick)
 
-	s.userByName[u.Nick] = u
-	s.Users[id] = NewUser(id, n, nick)
+	s.Users[id] = u
 
 	n.addUser(u)
 
 	return u
 }
 
-func (s *Stats) getUser(n *Network, name string) *User {
-	if u, ok := s.userByName[name]; ok {
+func (s *Stats) getUser(n *Network, nameOrHost string) *User {
+	nick := irc.Nick(nameOrHost)
+
+	if u, ok := n.users[nick]; ok {
 		return u
 	} else {
-		return s.addUser(n, name)
+		return s.addUser(n, nick)
 	}
 }
 
 func (s *Stats) getChannel(n *Network, name string) *Channel {
-	if c, ok := s.channelByName[name]; ok {
+	if c, ok := n.channels[name]; ok {
 		return c
 	} else {
 		return s.addChannel(n, name)

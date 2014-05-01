@@ -14,6 +14,38 @@ const (
 	hostmask = nick + "!" + name + "@" + host
 )
 
+func TestStats_GetterMethods(t *testing.T) {
+	t.Parallel()
+
+	s := NewStats()
+
+	if n := s.GetNetwork(network); n != nil {
+		t.Error("Network should be nil.")
+	}
+
+	if c := s.GetChannel(network, channel); c != nil {
+		t.Error("Channel should be nil on network.")
+	}
+
+	if u := s.GetUser(network, nick); u != nil {
+		t.Error("User should be nil on network.")
+	}
+
+	s.AddMessage(Msg, network, channel, hostmask, time.Now(), "some foo")
+
+	if n := s.GetNetwork(network); n == nil || n.Name != network {
+		t.Error("Should be able to lookup the network.")
+	}
+
+	if c := s.GetChannel(network, channel); c == nil || c.Name != channel {
+		t.Error("Should be able to lookup the channel on the network.")
+	}
+
+	if u := s.GetUser(network, nick); u == nil || u.Nick != nick {
+		t.Error("Should be able to lookup the user on the network.")
+	}
+}
+
 func TestStats_AddMessage(t *testing.T) {
 	t.Parallel()
 
@@ -150,7 +182,7 @@ func TestStats_getUser(t *testing.T) {
 	}
 
 	if len(s.Users) != 1 {
-		t.Error("There should be a User.")
+		t.Error("There should be a user.")
 	}
 
 	if c := s.getUser(n, nick); c == nil {
@@ -158,7 +190,7 @@ func TestStats_getUser(t *testing.T) {
 	}
 
 	if len(s.Users) != 1 {
-		t.Error("There should be only one User.")
+		t.Error("There should be only one user. (", len(s.Users), ")")
 	}
 }
 
