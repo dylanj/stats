@@ -88,6 +88,18 @@ func TestStats_AddMessage(t *testing.T) {
 	}
 }
 
+func TestStats_AddMessageBlankChannel(t *testing.T) {
+	t.Parallel()
+
+	s := NewStats()
+
+	s.AddMessage(Msg, network, "", hostmask, time.Now(), "some foo")
+
+	if len(s.Channels) != 0 {
+		t.Error("It should not add a channel.")
+	}
+}
+
 func TestStats_addNetwork(t *testing.T) {
 	t.Parallel()
 

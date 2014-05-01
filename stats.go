@@ -36,10 +36,10 @@ func NewStats() *Stats {
 
 		networkByName: make(map[string]*Network),
 
-		NetworkIDCount: 0,
-		MessageIDCount: 0,
-		ChannelIDCount: 0,
-		UserIDCount:    0,
+		NetworkIDCount: 1,
+		MessageIDCount: 1,
+		ChannelIDCount: 1,
+		UserIDCount:    1,
 	}
 }
 
@@ -69,10 +69,15 @@ func (s *Stats) GetUser(network, nick string) *User {
 // AddMessage adds a message to the stats.
 func (s *Stats) AddMessage(kind MsgKind, network string, channel string, hostmask string, date time.Time, message string) {
 
-	n := s.getNetwork(network)
+	var c *Channel
 
-	c := s.getChannel(n, channel)
+	n := s.getNetwork(network)
 	u := s.getUser(n, hostmask)
+
+	// channel can be blank (for example a QUIT message has no channel)
+	if channel != "" {
+		c = s.getChannel(n, channel)
+	}
 
 	s.addMessage(kind, n, c, u, date, message)
 }
@@ -109,21 +114,25 @@ func (s *Stats) addMessage(k MsgKind, n *Network, c *Channel, u *User, d time.Ti
 		ID:        id,
 		Date:      d,
 		UserID:    u.ID,
-		ChannelID: c.ID,
+		ChannelID: 0,
 		Message:   m,
 		Kind:      k,
 	}
 
-	s.Messages[id] = message
+	if c != nil {
+		message.ChannelID = c.ID
+		c.addMessageID(id)
+	}
 
-	c.addMessageID(id)
 	n.addMessageID(id)
 	u.addMessageID(id)
+
+	s.Messages[id] = message
 }
 
 func (s *Stats) addChannel(n *Network, name string) *Channel {
-	id := n.stats.ChannelIDCount
-	n.stats.ChannelIDCount++
+	id := s.ChannelIDCount
+	s.ChannelIDCount++
 
 	c := newChannel(id, n, name)
 

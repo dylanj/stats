@@ -15,6 +15,7 @@ type Channel struct {
 
 func newChannel(id uint, network *Network, name string) *Channel {
 	return &Channel{
+		ID:         id,
 		Name:       name,
 		JoinCount:  0,
 		PartCount:  0,
