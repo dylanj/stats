@@ -17,7 +17,7 @@ func (u *User) String() string {
 func NewUser(id uint, network *Network, nick string) *User {
 	user := User{
 		ID:         id,
-		Nick:       string(nick),
+		Nick:       nick,
 		NetworkID:  network.ID,
 		MessageIDs: make([]uint, 0),
 	}
