@@ -3,13 +3,26 @@ package main
 import (
 	"bufio"
 	"io"
+	"os"
 	"regexp"
+	"runtime/pprof"
 	"time"
 
 	"github.com/DylanJ/stats"
 )
 
 func main() {
+	profile, _ := os.Create("prof")
+	pprof.StartCPUProfile(profile)
+	defer pprof.StopCPUProfile()
+
+	f, _ := os.Open("deviate.weechatlog")
+
+	defer f.Close()
+
+	sc := NewDefaultScanner("whogivesashit", "network", "#deviate", "weechat")
+	stats := sc.ParseReader(f)
+	stats.Save()
 }
 
 type Scanner struct {
@@ -31,7 +44,7 @@ type Scanner struct {
 var weechat = &Scanner{
 	dateFormat: "2006-01-02 15:04:05",
 
-	message: regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t(?:[@&+])?(?P<nick>\S*)\t(?P<message>.*)$`),
+	message: regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t(?:[@&+])?(?P<nick>[^\s\-]+)\t(?P<message>.*)$`),
 	join:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t-->\t(?P<nick>.*) \((?P<host>.*)\) has joined (?P<channel>.*)$`),
 	quit:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t<--\t(?P<nick>.*) \((?P<host>.*)\) has quit (?P<message>.*)$`),
 	part:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t<--\t(?P<nick>.*) \((?P<host>.*)\) has left (?P<channel>(?:&|#)\w+)(?: \((?P<message>.*)\))?$`),
