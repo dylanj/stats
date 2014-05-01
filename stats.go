@@ -1,9 +1,8 @@
 package stats
 
 import (
-	"bytes"
+	"compress/gzip"
 	"encoding/gob"
-	"io/ioutil"
 	"log"
 	"os"
 	"time"
@@ -206,15 +205,18 @@ func (s *Stats) addNetwork(name string) *Network {
 
 // Save writes the statistics to data.db.
 func (s *Stats) Save() {
-	var buffer bytes.Buffer
-	enc := gob.NewEncoder(&buffer)
+	f, _ := os.Create("data.db")
+	defer f.Close()
+
+	gz := gzip.NewWriter(f)
+	defer gz.Close()
+
+	enc := gob.NewEncoder(gz)
 	err := enc.Encode(s)
 
 	if err != nil {
 		log.Fatal("encode error:", err)
 	}
-
-	ioutil.WriteFile("data.db", buffer.Bytes(), 0644)
 }
 
 // loadDatabase reads data.db and populates a Stats struct.
