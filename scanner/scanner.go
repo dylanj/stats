@@ -1,114 +1,162 @@
 package main
 
-import "stats"
-import "strings"
-import "os"
-import "bufio"
-import "regexp"
-import "errors"
+import (
+	"bufio"
+	"io"
+	"regexp"
+	"time"
 
-//import "fmt"
+	"github.com/DylanJ/stats"
+)
 
 func main() {
-	// load existing stats
-	// cmd options
-	// default: scanner deviate.weechatlog network channel
-	// help: ^
-	// list: lists networks and channels in db.
-	network := "zkpq.ca"
-	channel := "#deviate"
-	logfile := "deviate.weechatlog"
-
-	ParseFile(network, channel, logfile)
 }
 
-// ParseFile will for each line through the file and feed it into ParseLine.
-func ParseFile(network_name string, channel_name string, filename string) error {
-	file, _ := os.Open(filename)
-	scanner := bufio.NewScanner(file)
+type Scanner struct {
+	filename string
+	network  string
+	channel  string
 
-	var stats2 = stats.ImportData()
+	dateFormat string
 
-	var stats = stats.NewStats()
-	var network = stats.GetNetwork(network_name)
-	var channel = network.GetChannel(channel_name)
-
-	var i = 0
-	for scanner.Scan() {
-		i++
-		ParseLine(network, channel, scanner.Bytes())
-		//fmt.Printf("line %d\n", i)
-	}
-
-	stats2.Information()
-	stats.ExportData()
-
-	return errors.New("gi?")
+	message *regexp.Regexp
+	join    *regexp.Regexp
+	part    *regexp.Regexp
+	kick    *regexp.Regexp
+	quit    *regexp.Regexp
+	action  *regexp.Regexp
+	mode    *regexp.Regexp
 }
 
-func ParseJoin(n *stats.Network, line []byte) {
-	// joinRegex := regexp.MustCompile(`-->\t(?P<name>.*) \((?P<hostmask>.*)\) has joined (?P<channel>.*)`)
+var weechat = &Scanner{
+	dateFormat: "2006-01-02 15:04:05",
 
-	// n1 := joinRegex.SubexpNames()
-	// r2 := joinRegex.FindSubmatch(line)
-
-	// matches := make(map[string][]byte)
-	// for i := 1; i < len(r2); i++ {
-	// 	matches[n1[i]] = r2[i]
-	// }
-
-	// name := string(matches["name"])
-	// channel_name := string(matches["channel"])
-
-	// user := n.GetUser(name)
-	// channel := n.GetChannel(channel_name)
-
-	// channel.JoinCount++
-	// user.JoinCount++
+	message: regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t(?:[@&+])?(?P<nick>\S*)\t(?P<message>.*)$`),
+	join:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t-->\t(?P<nick>.*) \((?P<host>.*)\) has joined (?P<channel>.*)$`),
+	quit:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t<--\t(?P<nick>.*) \((?P<host>.*)\) has quit (?P<message>.*)$`),
+	part:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t<--\t(?P<nick>.*) \((?P<host>.*)\) has left (?P<channel>(?:&|#)\w+)(?: \((?P<message>.*)\))?$`),
 }
 
-func ParseMessage(n *stats.Network, c *stats.Channel, matches map[string][]byte) {
-	nick := strings.TrimLeft(string(matches["cmd"]), "@+&")
-	user := n.GetUser(nick)
-
-	message := &stats.Message{
-		Message:   string(matches["message"]),
-		UserID:    user.ID,
-		ChannelID: c.ID,
-		// todo date: ???
-	}
-
-	n.AddMessage(message)
-}
-
-func ParseLine(n *stats.Network, c *stats.Channel, line []byte) error {
-	//messageRegex := regexp.MustCompile(`(?P<date>.*)\t(?P<cmd>.*)\t(?P<message>.*)`)
-	messageRegex := regexp.MustCompile(`(?P<date>[0-9:\- ]*)\t(?P<cmd>[\w@+&]*)\t{1}(?P<message>.*)`)
-	n1 := messageRegex.SubexpNames()
-	r2 := messageRegex.FindSubmatch(line)
-
-	matches := make(map[string][]byte)
-	for i := 1; i < len(r2); i++ {
-		matches[n1[i]] = r2[i]
-	}
-
-	//  fmt.Printf("match: [%s]\n", matches["cmd"])
-	switch string(matches["cmd"]) {
-	case "-->":
-		ParseJoin(n, line)
-		break
-	case "<--":
-		// someone has quit.
-		break
-	case "--":
-		// some kind of message.
-		break
-	case " *":
-		break
+// NewDefaultScanner
+func NewDefaultScanner(filename, network, channel, scanner string) *Scanner {
+	var sc *Scanner
+	switch scanner {
+	case "weechat":
+		sc = weechat
 	default:
-		ParseMessage(n, c, matches)
-		break
+		return nil
 	}
 
-	return errors.New("da")
+	sc.network = network
+	sc.channel = channel
+	sc.filename = filename
+
+	return sc
+}
+
+// ParseReader parses a reader into statistics
+func (sc *Scanner) ParseReader(r io.Reader) *stats.Stats {
+	stats := stats.NewStats() // import
+
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
+		sc.ParseLine(stats, scanner.Text())
+	}
+
+	return stats
+}
+
+func findIndex(haystack []string, needle string) int {
+	for i, v := range haystack {
+		if needle == v {
+			return i
+		}
+	}
+
+	return -1
+}
+
+func findData(regex *regexp.Regexp, line string) map[string]string {
+	results := make(map[string]string)
+
+	r := regex.FindStringSubmatch(line)
+
+	if r == nil {
+		return nil
+	}
+
+	names := regex.SubexpNames()
+
+	for i, n := range names[1:] {
+		results[n] = r[i+1]
+	}
+
+	if host := results["host"]; len(host) > 0 {
+		results["nick"] += "!" + host
+	}
+
+	return results
+}
+
+func (sc *Scanner) ParseLine(s *stats.Stats, line string) {
+	if r := findData(sc.join, line); r != nil {
+
+		nick, dateString, channel := r["nick"], r["date"], r["channel"]
+
+		if len(nick) == 0 || len(dateString) == 0 || len(channel) == 0 {
+			return
+		}
+
+		date, err := time.Parse(sc.dateFormat, dateString)
+		if err != nil {
+			return
+		}
+
+		s.AddMessage(stats.Join, sc.network, channel, nick, date, "")
+
+	} else if r := findData(sc.part, line); r != nil {
+
+		nick, dateString, channel, message := r["nick"], r["date"], r["channel"], r["message"]
+
+		if len(nick) == 0 || len(dateString) == 0 || len(channel) == 0 {
+			return
+		}
+
+		date, err := time.Parse(sc.dateFormat, dateString)
+		if err != nil {
+			return
+		}
+
+		s.AddMessage(stats.Part, sc.network, channel, nick, date, message)
+
+	} else if r = findData(sc.quit, line); r != nil {
+
+		nick, dateString, message := r["nick"], r["date"], r["message"]
+
+		if len(nick) == 0 || len(dateString) == 0 || len(message) == 0 {
+			return
+		}
+
+		date, err := time.Parse(sc.dateFormat, dateString)
+		if err != nil {
+			return
+		}
+
+		s.AddMessage(stats.Quit, sc.network, "", nick, date, message)
+
+	} else if r = findData(sc.message, line); r != nil {
+
+		nick, dateString, message := r["nick"], r["date"], r["message"]
+
+		if len(nick) == 0 || len(dateString) == 0 || len(message) == 0 {
+			return
+		}
+
+		date, err := time.Parse(sc.dateFormat, dateString)
+		if err != nil {
+			return
+		}
+
+		s.AddMessage(stats.Msg, sc.network, "", nick, date, message)
+	}
 }
