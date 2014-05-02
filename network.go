@@ -30,3 +30,21 @@ func (n *Network) getUser(name string) *User {
 func (n *Network) addMessageID(m_id uint) {
 	n.MessageIDs = append(n.MessageIDs, m_id)
 }
+
+// buildIndexes builds the internal maps that relate data
+func (n *Network) buildIndexes() {
+	n.channels = make(map[string]*Channel)
+	n.users = make(map[string]*User)
+
+	for _, cID := range n.ChannelIDs {
+		c := n.stats.Channels[cID]
+
+		n.channels[c.Name] = c
+	}
+
+	for _, uID := range n.UserIDs {
+		u := n.stats.Users[uID]
+
+		n.users[u.Nick] = u
+	}
+}

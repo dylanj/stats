@@ -26,6 +26,17 @@ type Stats struct {
 
 // NewStats initializes a Stats struct.
 func NewStats() *Stats {
+	// s, err := loadDatabase()
+
+	// if err != nil {
+	// 	fmt.Printf("Error'd: %v\n", err)
+	// 	return nil
+	// }
+
+	// if s != nil {
+	// 	return s
+	// }
+
 	// load from stats.db
 	return &Stats{
 		Channels: make(map[uint]*Channel),
@@ -219,14 +230,34 @@ func (s *Stats) Save() {
 	}
 }
 
+// buildIndexes builds the internal maps that relate data
+func (s *Stats) buildIndexes() {
+	s.networkByName = make(map[string]*Network)
+
+	for _, n := range s.Networks {
+		s.networkByName[n.Name] = n
+		n.buildIndexes()
+	}
+}
+
 // loadDatabase reads data.db and populates a Stats struct.
-func loadDatabase() *Stats {
-	file, _ := os.Open("data.db")
+func loadDatabase() (*Stats, error) {
+	file, err := os.Open("data.db")
+
+	if os.IsNotExist(err) {
+		return nil, nil
+	} else {
+		return nil, err
+	}
 
 	decoder := gob.NewDecoder(file)
 	var stats Stats
 
-	decoder.Decode(&stats)
+	if err = decoder.Decode(&stats); err != nil {
+		return nil, err
+	}
 
-	return &stats
+	stats.buildIndexes()
+
+	return &stats, nil
 }

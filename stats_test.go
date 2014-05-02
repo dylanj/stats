@@ -234,3 +234,21 @@ func TestStats_HourlyChart(t *testing.T) {
 		}
 	}
 }
+
+func TestStats_buildIndexes(t *testing.T) {
+	t.Parallel()
+
+	s := NewStats()
+	s.AddMessage(Msg, network, channel, hostmask, time.Now(), "some foo")
+	s.networkByName = nil
+
+	s.buildIndexes()
+
+	if s.networkByName == nil {
+		t.Error("networkByName should have been created")
+	}
+
+	if s.networkByName[network] == nil {
+		t.Error("should be able to look up network")
+	}
+}
