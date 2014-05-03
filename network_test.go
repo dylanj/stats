@@ -14,8 +14,9 @@ func TestNetwork_buildIndexes(t *testing.T) {
 	n := s.Networks[1]
 	n.channels = nil
 	n.users = nil
+	n.stats = nil
 
-	n.buildIndexes()
+	n.buildIndexes(s)
 
 	if n.channels == nil {
 		t.Error("channels index should have been created")
@@ -23,6 +24,10 @@ func TestNetwork_buildIndexes(t *testing.T) {
 
 	if n.users == nil {
 		t.Error("users index should have been created")
+	}
+
+	if n.stats == nil {
+		t.Error("should be pointer to stats")
 	}
 
 	if _, ok := n.channels[channel]; !ok {

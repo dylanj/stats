@@ -1,6 +1,9 @@
 package stats
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 type User struct {
 	ID         uint
@@ -27,4 +30,10 @@ func NewUser(id uint, network *Network, nick string) *User {
 
 func (u *User) addMessageID(m_id uint) {
 	u.MessageIDs = append(u.MessageIDs, m_id)
+}
+
+func (u *User) RandomMessageID() uint {
+	count := len(u.MessageIDs)
+	id := rand.Intn(count)
+	return u.MessageIDs[id]
 }

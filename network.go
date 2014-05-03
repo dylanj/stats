@@ -32,9 +32,10 @@ func (n *Network) addMessageID(m_id uint) {
 }
 
 // buildIndexes builds the internal maps that relate data
-func (n *Network) buildIndexes() {
+func (n *Network) buildIndexes(s *Stats) {
 	n.channels = make(map[string]*Channel)
 	n.users = make(map[string]*User)
+	n.stats = s
 
 	for _, cID := range n.ChannelIDs {
 		c := n.stats.Channels[cID]

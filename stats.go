@@ -3,6 +3,7 @@ package stats
 import (
 	"compress/gzip"
 	"encoding/gob"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -26,17 +27,19 @@ type Stats struct {
 
 // NewStats initializes a Stats struct.
 func NewStats() *Stats {
-	// s, err := loadDatabase()
+	s, err := loadDatabase()
 
-	// if err != nil {
-	// 	fmt.Printf("Error'd: %v\n", err)
-	// 	return nil
-	// }
+	if err != nil {
+		fmt.Printf("Error'd: %v\n", err)
+		return nil
+	}
 
-	// if s != nil {
-	// 	return s
-	// }
+	if s != nil {
+		fmt.Println("Loaded DB")
+		return s
+	}
 
+	fmt.Printf("New Database")
 	// load from stats.db
 	return &Stats{
 		Channels: make(map[uint]*Channel),
@@ -236,21 +239,28 @@ func (s *Stats) buildIndexes() {
 
 	for _, n := range s.Networks {
 		s.networkByName[n.Name] = n
-		n.buildIndexes()
+		n.buildIndexes(s)
 	}
 }
 
 // loadDatabase reads data.db and populates a Stats struct.
 func loadDatabase() (*Stats, error) {
-	file, err := os.Open("data.db")
+	file, err := os.Open("./data.db")
+	defer file.Close()
 
-	if os.IsNotExist(err) {
-		return nil, nil
-	} else {
-		return nil, err
+	if err != nil {
+		if os.IsNotExist(err) {
+			fmt.Println("Database doesn't exist")
+			return nil, nil
+		} else {
+			fmt.Println("Some other error: %v", err)
+			return nil, err
+		}
 	}
 
-	decoder := gob.NewDecoder(file)
+	r, _ := gzip.NewReader(file)
+	defer r.Close()
+	decoder := gob.NewDecoder(r)
 	var stats Stats
 
 	if err = decoder.Decode(&stats); err != nil {

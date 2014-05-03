@@ -11,18 +11,18 @@ var local_asset_path = "./html/assets"
 var s *stats.Stats
 
 func main() {
-  s = stats.ImportData()
+	s = stats.NewStats()
 
-  s.Information()
-
-  StartServer()
+	StartServer()
 }
 
 func web_api(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("someone hit api")
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, UserStatsJSON(s))
 }
 func web_root(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("someone hit /")
 	http.ServeFile(w, r, "./html/index.html")
 }
 
