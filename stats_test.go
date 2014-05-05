@@ -5,6 +5,13 @@ import (
 	"time"
 )
 
+func init() {
+	// override loadDB to avoid fs calls
+	loadDB = func() (*Stats, error) {
+		return nil, nil
+	}
+}
+
 const (
 	network  = "test_network"
 	channel  = "#test"

@@ -16,6 +16,8 @@ func init() {
 	rand.Seed(time.Now().Unix())
 }
 
+var loadDB = loadDatabase
+
 type Stats struct {
 	Channels map[uint]*Channel
 	Messages map[uint]*Message
@@ -32,7 +34,7 @@ type Stats struct {
 
 // NewStats initializes a Stats struct.
 func NewStats() *Stats {
-	s, err := loadDatabase()
+	s, err := loadDB()
 
 	if err != nil {
 		fmt.Printf("Error'd: %v\n", err)
@@ -40,11 +42,9 @@ func NewStats() *Stats {
 	}
 
 	if s != nil {
-		fmt.Println("Loaded DB")
 		return s
 	}
 
-	fmt.Printf("New Database")
 	// load from stats.db
 	return &Stats{
 		Channels: make(map[uint]*Channel),
