@@ -3,6 +3,8 @@ package stats
 import "fmt"
 
 type Channel struct {
+	HourlyChart
+
 	ID         uint
 	Name       string
 	Topic      string
@@ -31,8 +33,9 @@ func (c *Channel) String() string {
 }
 
 // AddMessageID adds a message id to the list of message ids.
-func (c *Channel) addMessageID(mid uint) {
-	c.MessageIDs = append(c.MessageIDs, mid)
-}
+func (c *Channel) addMessage(m *Message) {
+	c.MessageIDs = append(c.MessageIDs, m.ID)
 
-//188097
+	// stats stuff
+	c.HourlyChart.addMessage(m)
+}

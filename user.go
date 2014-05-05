@@ -6,6 +6,8 @@ import (
 )
 
 type User struct {
+	HourlyChart
+
 	ID         uint
 	Nick       string
 	Hostmask   string
@@ -28,8 +30,10 @@ func NewUser(id uint, network *Network, nick string) *User {
 	return &user
 }
 
-func (u *User) addMessageID(m_id uint) {
-	u.MessageIDs = append(u.MessageIDs, m_id)
+func (u *User) addMessage(m *Message) {
+	u.MessageIDs = append(u.MessageIDs, m.ID)
+
+	u.HourlyChart.addMessage(m)
 }
 
 func (u *User) RandomMessageID() uint {

@@ -1,6 +1,8 @@
 package stats
 
 type Network struct {
+	HourlyChart
+
 	ID         uint
 	Name       string
 	ChannelIDs []uint
@@ -27,8 +29,10 @@ func (n *Network) getUser(name string) *User {
 	return &User{}
 }
 
-func (n *Network) addMessageID(m_id uint) {
-	n.MessageIDs = append(n.MessageIDs, m_id)
+func (n *Network) addMessage(m *Message) {
+	n.MessageIDs = append(n.MessageIDs, m.ID)
+
+	n.HourlyChart.addMessage(m)
 }
 
 // buildIndexes builds the internal maps that relate data

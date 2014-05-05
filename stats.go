@@ -95,30 +95,6 @@ func (s *Stats) AddMessage(kind MsgKind, network string, channel string, hostmas
 	s.addMessage(kind, n, c, u, date, message)
 }
 
-// HourlyChart returns an array of integers with the number of messages said each hour
-// in the given channel on the given network.
-// The index of the array is the hour
-func (s *Stats) HourlyChart(network string, channel string) ([24]int, bool) {
-	var chart [24]int
-
-	n, ok := s.networkByName[network]
-	if !ok {
-		return chart, false
-	}
-
-	c, ok := n.channels[channel]
-	if !ok {
-		return chart, false
-	}
-
-	for _, id := range c.MessageIDs {
-		hour := s.Messages[id].Date.Hour()
-		chart[hour]++
-	}
-
-	return chart, true
-}
-
 func (s *Stats) addMessage(k MsgKind, n *Network, c *Channel, u *User, d time.Time, m string) {
 	id := s.MessageIDCount
 	s.MessageIDCount++
@@ -134,11 +110,11 @@ func (s *Stats) addMessage(k MsgKind, n *Network, c *Channel, u *User, d time.Ti
 
 	if c != nil {
 		message.ChannelID = c.ID
-		c.addMessageID(id)
+		c.addMessage(message)
 	}
 
-	n.addMessageID(id)
-	u.addMessageID(id)
+	n.addMessage(message)
+	u.addMessage(message)
 
 	s.Messages[id] = message
 }

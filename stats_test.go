@@ -206,35 +206,6 @@ func TestStats_getUser(t *testing.T) {
 	}
 }
 
-func TestStats_HourlyChart(t *testing.T) {
-	t.Parallel()
-
-	s := NewStats()
-	n := s.addNetwork(network)
-	c := s.addChannel(n, channel)
-	u := s.addUser(n, nick)
-
-	for i := 23; i >= 0; i-- {
-		for j := 0; j < i; j++ {
-			date := time.Date(2014, time.April, 29, i, 30, 0, 1, time.UTC)
-
-			s.addMessage(Msg, n, c, u, date, "nihao")
-		}
-	}
-
-	chart, success := s.HourlyChart("test_network", "#test")
-
-	if !success {
-		t.Errorf("success should be true")
-	}
-
-	for i := 0; i < 24; i++ {
-		if chart[i] != i {
-			t.Errorf("Hour[%d] has %d messages, expected: %d", i, chart[i], i)
-		}
-	}
-}
-
 func TestStats_buildIndexes(t *testing.T) {
 	t.Parallel()
 
