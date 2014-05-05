@@ -2,6 +2,7 @@ package stats
 
 type Network struct {
 	HourlyChart
+	Quotes quotes
 
 	ID         uint
 	Name       string
@@ -33,6 +34,7 @@ func (n *Network) addMessage(m *Message) {
 	n.MessageIDs = append(n.MessageIDs, m.ID)
 
 	n.HourlyChart.addMessage(m)
+	n.Quotes.addMessage(m)
 }
 
 // buildIndexes builds the internal maps that relate data

@@ -7,6 +7,7 @@ import (
 
 type User struct {
 	HourlyChart
+	Quotes quotes
 
 	ID         uint
 	Nick       string
@@ -34,6 +35,7 @@ func (u *User) addMessage(m *Message) {
 	u.MessageIDs = append(u.MessageIDs, m.ID)
 
 	u.HourlyChart.addMessage(m)
+	u.Quotes.addMessage(m)
 }
 
 func (u *User) RandomMessageID() uint {

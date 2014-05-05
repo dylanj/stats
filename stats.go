@@ -5,11 +5,16 @@ import (
 	"encoding/gob"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"time"
 
 	"github.com/aarondl/ultimateq/irc"
 )
+
+func init() {
+	rand.Seed(time.Now().Unix())
+}
 
 type Stats struct {
 	Channels map[uint]*Channel

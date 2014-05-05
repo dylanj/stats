@@ -4,6 +4,7 @@ import "fmt"
 
 type Channel struct {
 	HourlyChart
+	Quotes quotes
 
 	ID         uint
 	Name       string
@@ -38,4 +39,5 @@ func (c *Channel) addMessage(m *Message) {
 
 	// stats stuff
 	c.HourlyChart.addMessage(m)
+	c.Quotes.addMessage(m)
 }
