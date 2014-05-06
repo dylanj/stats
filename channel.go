@@ -5,6 +5,7 @@ import "fmt"
 type Channel struct {
 	HourlyChart
 	Quotes quotes
+	URLs   urls
 
 	ID         uint
 	Name       string
@@ -25,6 +26,8 @@ func newChannel(id uint, network *Network, name string) *Channel {
 		UserIDs:    make([]uint, 0),
 		MessageIDs: make([]uint, 0),
 		NetworkID:  network.ID,
+
+		URLs: *NewURLs(),
 	}
 }
 
@@ -40,4 +43,5 @@ func (c *Channel) addMessage(m *Message) {
 	// stats stuff
 	c.HourlyChart.addMessage(m)
 	c.Quotes.addMessage(m)
+	c.URLs.addMessage(m)
 }
