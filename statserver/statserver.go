@@ -2,6 +2,7 @@ package main
 
 // import "github.com/aarondl/ultimateq/irc"
 import "github.com/DylanJ/stats"
+
 import "net/http"
 import "fmt"
 import "errors"
@@ -12,15 +13,15 @@ var s *stats.Stats
 
 func main() {
 	s = stats.NewStats()
-
 	StartServer()
 }
 
 func web_api(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("someone hit api")
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, UserStatsJSON(s))
+	ChannelStats(w, s, "network", "#deviate")
 }
+
 func web_root(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("someone hit /")
 	http.ServeFile(w, r, "./html/index.html")
