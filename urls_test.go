@@ -40,9 +40,17 @@ func TestURLsUpdates(t *testing.T) {
 		t.Error("Channel URLs should still be empty")
 	}
 
+	if len(n.URLs) != 0 {
+		t.Error("Network URLs should still be empty")
+	}
+
 	s.addMessage(Msg, n, c, u, time.Now(), "hello google.com world")
 
 	if len(c.URLs) == 0 {
 		t.Error("Channel URLs should have had url added to it")
+	}
+
+	if len(n.URLs) == 0 {
+		t.Error("Network URLs should have had url added to it")
 	}
 }

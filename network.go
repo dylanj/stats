@@ -8,6 +8,7 @@ import (
 type Network struct {
 	HourlyChart
 	Quotes quotes
+	URLs   urls
 
 	ID         uint
 	Name       string
@@ -40,6 +41,7 @@ func (n *Network) addMessage(m *Message) {
 
 	n.HourlyChart.addMessage(m)
 	n.Quotes.addMessage(m)
+	n.URLs.addMessage(m)
 }
 
 // buildIndexes builds the internal maps that relate data

@@ -188,6 +188,7 @@ func (s *Stats) addNetwork(name string) *Network {
 		ChannelIDs: make([]uint, 0),
 		UserIDs:    make([]uint, 0),
 		MessageIDs: make([]uint, 0),
+		URLs:       NewURLs(),
 
 		channels: make(map[string]*Channel),
 		users:    make(map[string]*User),
