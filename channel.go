@@ -1,6 +1,9 @@
 package stats
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Channel struct {
 	HourlyChart
@@ -15,6 +18,8 @@ type Channel struct {
 	UserIDs    map[uint]struct{}
 	MessageIDs []uint
 	NetworkID  uint
+
+	LastActive time.Time
 }
 
 func newChannel(id uint, network *Network, name string) *Channel {
@@ -46,6 +51,8 @@ func (c *Channel) addMessage(m *Message) {
 	c.HourlyChart.addMessage(m)
 	c.Quotes.addMessage(m)
 	c.URLs.addMessage(m)
+
+	c.LastActive = m.Date
 }
 
 // AddUserID

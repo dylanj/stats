@@ -3,6 +3,7 @@ package stats
 import (
 	"fmt"
 	"math/rand"
+	"time"
 )
 
 type User struct {
@@ -14,6 +15,8 @@ type User struct {
 	Hostmask   string
 	NetworkID  uint
 	MessageIDs []uint
+
+	LastSeen time.Time
 }
 
 func (u *User) String() string {
@@ -36,6 +39,8 @@ func (u *User) addMessage(m *Message) {
 
 	u.HourlyChart.addMessage(m)
 	u.Quotes.addMessage(m)
+
+	u.LastSeen = m.Date
 }
 
 func (u *User) RandomMessageID() uint {
