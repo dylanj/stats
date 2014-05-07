@@ -12,7 +12,7 @@ type Channel struct {
 	Topic      string
 	JoinCount  uint
 	PartCount  uint
-	UserIDs    []uint
+	UserIDs    map[uint]struct{}
 	MessageIDs []uint
 	NetworkID  uint
 }
@@ -23,11 +23,11 @@ func newChannel(id uint, network *Network, name string) *Channel {
 		Name:       name,
 		JoinCount:  0,
 		PartCount:  0,
-		UserIDs:    make([]uint, 0),
+		UserIDs:    make(map[uint]struct{}, 0),
 		MessageIDs: make([]uint, 0),
 		NetworkID:  network.ID,
 
-		URLs: *NewURLs(),
+		URLs: NewURLs(),
 	}
 }
 
@@ -40,8 +40,15 @@ func (c *Channel) String() string {
 func (c *Channel) addMessage(m *Message) {
 	c.MessageIDs = append(c.MessageIDs, m.ID)
 
+	c.addUserID(m.UserID)
+
 	// stats stuff
 	c.HourlyChart.addMessage(m)
 	c.Quotes.addMessage(m)
 	c.URLs.addMessage(m)
+}
+
+// AddUserID
+func (c *Channel) addUserID(id uint) {
+	c.UserIDs[id] = struct{}{}
 }
