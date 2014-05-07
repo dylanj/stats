@@ -1,5 +1,7 @@
 package stats
 
+import "fmt"
+
 type Network struct {
 	HourlyChart
 	Quotes quotes
@@ -54,4 +56,9 @@ func (n *Network) buildIndexes(s *Stats) {
 
 		n.users[u.Nick] = u
 	}
+}
+
+// String returns a the name of the channel and some basic stats.
+func (n *Network) String() string {
+	return fmt.Sprintf("Network: %s, Channels: %d, Messages: %d", n.Name, len(n.ChannelIDs), len(n.MessageIDs))
 }
