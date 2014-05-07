@@ -22,37 +22,6 @@ func TestURLs(t *testing.T) {
 	}
 }
 
-func TestURLs_TopURLs(t *testing.T) {
-	t.Parallel()
-
-	u := NewURLs()
-
-	urls := []string{"http://google.com", "http://slashdot.org", "http://news.ycombinator.com", "github.com", "amazon.com", "freenode.net"}
-
-	for i, url := range urls {
-		m := &Message{Message: "i use " + url + " to do things"}
-
-		for j := 0; j <= i; j++ {
-			u.addMessage(m)
-		}
-	}
-
-	nURLs := 5
-	topURLs := u.TopURLs(nURLs)
-
-	if len(topURLs) != nURLs {
-		t.Errorf("Should return %d top urls", nURLs)
-	}
-
-	if topURLs[0].Count != uint(len(urls)) {
-		t.Error("Incorrect count for top url")
-	}
-
-	if topURLs[0].URL != urls[len(urls)-1] {
-		t.Error("Incorrect URL for top urls")
-	}
-}
-
 func TestURLsUpdates(t *testing.T) {
 	t.Parallel()
 

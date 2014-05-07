@@ -19,7 +19,7 @@ type UserJSON struct {
 type ChannelStatsJSON struct {
 	TopUsers    []*UserJSON
 	HourlyChart stats.HourlyChart
-	TopURLs     []*stats.TopURL
+	TopURLs     []*TopURL
 }
 
 type ByMessageCount []*UserJSON
@@ -40,7 +40,7 @@ func ChannelStats(w http.ResponseWriter, s *stats.Stats, n, c string) {
 
 	data := &ChannelStatsJSON{
 		HourlyChart: channel.HourlyChart,
-		TopURLs:     channel.URLs.TopURLs(5),
+		TopURLs:     TopURLs(channel.URLs, 5),
 		TopUsers:    channelStats_TopUsers(s, channel),
 	}
 

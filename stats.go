@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/aarondl/ultimateq/irc"
@@ -153,7 +154,7 @@ func (s *Stats) addUser(n *Network, nick string) *User {
 func (s *Stats) getUser(n *Network, nameOrHost string) *User {
 	nick := irc.Nick(nameOrHost)
 
-	if u, ok := n.users[nick]; ok {
+	if u, ok := n.users[strings.ToLower(nick)]; ok {
 		return u
 	} else {
 		return s.addUser(n, nick)
@@ -161,7 +162,7 @@ func (s *Stats) getUser(n *Network, nameOrHost string) *User {
 }
 
 func (s *Stats) getChannel(n *Network, name string) *Channel {
-	if c, ok := n.channels[name]; ok {
+	if c, ok := n.channels[strings.ToLower(name)]; ok {
 		return c
 	} else {
 		return s.addChannel(n, name)
@@ -169,7 +170,7 @@ func (s *Stats) getChannel(n *Network, name string) *Channel {
 }
 
 func (s *Stats) getNetwork(name string) *Network {
-	if n, ok := s.networkByName[name]; ok {
+	if n, ok := s.networkByName[strings.ToLower(name)]; ok {
 		return n
 	} else {
 		return s.addNetwork(name)
@@ -193,7 +194,7 @@ func (s *Stats) addNetwork(name string) *Network {
 	}
 
 	s.Networks[id] = n
-	s.networkByName[name] = n
+	s.networkByName[strings.ToLower(name)] = n
 
 	return n
 }
