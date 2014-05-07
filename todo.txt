@@ -1,0 +1,32 @@
+stats todo:
+
+visual interface
+topics (last n)
+ops / deops, voices / devoices
+
+map[string]int
+[]struct{
+  Word string
+  Count int
+}
+
+word list (most used words)
+largest/smallest user / channel vocabulary (so unique words)
+
+swearing
+consecutive lines
+words per line, letters per line
+total words
+
+//
+smiley faces / sad faces
+questions...  `\w\?`
+exclamations
+talking in caps
+
+
+slaps
+
+received kicks / sent kicks
+
+

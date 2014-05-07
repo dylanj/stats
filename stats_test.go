@@ -58,7 +58,7 @@ func TestStats_AddMessage(t *testing.T) {
 
 	s := NewStats()
 
-	s.AddMessage(Msg, network, channel, hostmask, time.Now(), "some foo")
+	s.AddMessage(Msg, network, channel, hostmask, time.Now(), "tree foo http://google.com")
 
 	if len(s.Networks) != 1 {
 		t.Error("It should add the network.")
@@ -74,6 +74,22 @@ func TestStats_AddMessage(t *testing.T) {
 
 	if len(s.Messages) != 1 {
 		t.Error("It should add the message.")
+	}
+
+	if len(s.Networks[1].WordCounter.All) != 2 {
+		t.Error("It should add the two words in the message.")
+	}
+
+	if len(s.Channels[1].WordCounter.All) != 2 {
+		t.Error("It should add the two words in the message.")
+	}
+
+	if len(s.Networks[1].URLCounter.All) != 1 {
+		t.Error("It should add the URL in the message.")
+	}
+
+	if len(s.Channels[1].URLCounter.All) != 1 {
+		t.Error("It should add the URL in the message.")
 	}
 
 	s.AddMessage(Msg, network, channel, hostmask, time.Now(), "some foo")

@@ -9,6 +9,7 @@ import (
 type User struct {
 	HourlyChart
 	Quotes quotes
+	WordCounter
 
 	ID         uint
 	Nick       string
@@ -29,6 +30,8 @@ func NewUser(id uint, network *Network, nick string) *User {
 		Nick:       nick,
 		NetworkID:  network.ID,
 		MessageIDs: make([]uint, 0),
+
+		WordCounter: NewWordCounter(),
 	}
 
 	return &user

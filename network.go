@@ -8,7 +8,8 @@ import (
 type Network struct {
 	HourlyChart
 	Quotes quotes
-	URLs   urls
+	URLCounter
+	WordCounter
 
 	ID         uint
 	Name       string
@@ -41,7 +42,8 @@ func (n *Network) addMessage(m *Message) {
 
 	n.HourlyChart.addMessage(m)
 	n.Quotes.addMessage(m)
-	n.URLs.addMessage(m)
+	n.URLCounter.addMessage(m)
+	n.WordCounter.addMessage(m)
 }
 
 // buildIndexes builds the internal maps that relate data
@@ -52,6 +54,9 @@ func (n *Network) buildIndexes(s *Stats) {
 
 	for _, cID := range n.ChannelIDs {
 		c := n.stats.Channels[cID]
+
+		// c.URLs.regex = tokenRegexURL
+		// c.WordCounter.regex = tokenRegexURL
 
 		n.channels[c.Name] = c
 	}

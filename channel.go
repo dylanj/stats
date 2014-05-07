@@ -7,8 +7,9 @@ import (
 
 type Channel struct {
 	HourlyChart
+	URLCounter
+	WordCounter
 	Quotes quotes
-	URLs   urls
 
 	ID         uint
 	Name       string
@@ -32,7 +33,8 @@ func newChannel(id uint, network *Network, name string) *Channel {
 		MessageIDs: make([]uint, 0),
 		NetworkID:  network.ID,
 
-		URLs: NewURLs(),
+		URLCounter:  NewURLCounter(),
+		WordCounter: NewWordCounter(),
 	}
 }
 
@@ -50,7 +52,8 @@ func (c *Channel) addMessage(m *Message) {
 	// stats stuff
 	c.HourlyChart.addMessage(m)
 	c.Quotes.addMessage(m)
-	c.URLs.addMessage(m)
+	c.URLCounter.addMessage(m)
+	c.WordCounter.addMessage(m)
 
 	c.LastActive = m.Date
 }

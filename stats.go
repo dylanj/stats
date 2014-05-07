@@ -182,13 +182,14 @@ func (s *Stats) addNetwork(name string) *Network {
 	s.NetworkIDCount++
 
 	n := &Network{
-		Name:       name,
-		ID:         id,
-		stats:      s,
-		ChannelIDs: make([]uint, 0),
-		UserIDs:    make([]uint, 0),
-		MessageIDs: make([]uint, 0),
-		URLs:       NewURLs(),
+		Name:        name,
+		ID:          id,
+		stats:       s,
+		ChannelIDs:  make([]uint, 0),
+		UserIDs:     make([]uint, 0),
+		MessageIDs:  make([]uint, 0),
+		URLCounter:  NewURLCounter(),
+		WordCounter: NewWordCounter(),
 
 		channels: make(map[string]*Channel),
 		users:    make(map[string]*User),
