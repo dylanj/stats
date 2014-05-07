@@ -170,6 +170,6 @@ func (sc *Scanner) ParseLine(s *stats.Stats, line string) {
 			return
 		}
 
-		s.AddMessage(stats.Msg, sc.network, "", nick, date, message)
+		s.AddMessage(stats.Msg, sc.network, sc.channel, nick, date, message)
 	}
 }
