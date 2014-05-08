@@ -42,6 +42,7 @@ func (u *User) addMessage(m *Message) {
 
 	u.HourlyChart.addMessage(m)
 	u.Quotes.addMessage(m)
+	u.WordCounter.addMessage(m)
 
 	u.LastSeen = m.Date
 }
