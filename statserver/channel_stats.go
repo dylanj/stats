@@ -10,16 +10,19 @@ import (
 )
 
 type UserJSON struct {
-	ID           uint
-	Name         string
-	MessageCount int
-	Message      string
+	ID             uint
+	Name           string
+	MessageCount   int
+	Message        string
+	HourlyChart    [24]int
+	VocabularySize int
 }
 
 type ChannelStatsJSON struct {
 	TopUsers    []*UserJSON
 	HourlyChart stats.HourlyChart
-	TopURLs     []*TopURL
+	TopURLs     []stats.TopToken
+	TopWords    []stats.TopToken
 }
 
 type ByMessageCount []*UserJSON
@@ -40,7 +43,8 @@ func ChannelStats(w http.ResponseWriter, s *stats.Stats, n, c string) {
 
 	data := &ChannelStatsJSON{
 		HourlyChart: channel.HourlyChart,
-		TopURLs:     TopURLs(channel.URLs, 5),
+		TopURLs:     channel.URLCounter.Top[:15],
+		TopWords:    channel.WordCounter.Top,
 		TopUsers:    channelStats_TopUsers(s, channel),
 	}
 
@@ -57,10 +61,12 @@ func channelStats_TopUsers(s *stats.Stats, c *stats.Channel) []*UserJSON {
 			message := s.Messages[u.RandomMessageID()]
 
 			user := &UserJSON{
-				ID:           id,
-				Name:         u.Nick,
-				MessageCount: len(u.MessageIDs),
-				Message:      message.Message,
+				ID:             id,
+				Name:           u.Nick,
+				MessageCount:   len(u.MessageIDs),
+				Message:        message.Message,
+				HourlyChart:    u.HourlyChart,
+				VocabularySize: len(u.WordCounter.All),
 			}
 
 			users = append(users, user)
