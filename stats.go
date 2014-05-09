@@ -116,7 +116,7 @@ func (s *Stats) addMessage(k MsgKind, n *Network, c *Channel, u *User, d time.Ti
 
 	if c != nil {
 		message.ChannelID = c.ID
-		c.addMessage(message)
+		c.addMessage(message, u)
 	}
 
 	n.addMessage(message)

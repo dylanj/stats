@@ -1,32 +1,27 @@
 stats todo:
 
+json struct tagz
 visual interface
-topics (last n)
-ops / deops, voices / devoices
 
-map[string]int
-[]struct{
-  Word string
-  Count int
-}
-
-word list (most used words)
+*word list (most used words)
 largest/smallest user / channel vocabulary (so unique words)
+use unicodes  \pL <--
 
 swearing
-consecutive lines
 words per line, letters per line
-total words
+*total words
 
-//
+consecutive lines
+
 smiley faces / sad faces
 questions...  `\w\?`
 exclamations
-talking in caps
-
+talking in caps -> ^[A-Z ]$
 
 slaps
 
 received kicks / sent kicks
 
+topics (last n)
 
+ops / deops, voices / devoices

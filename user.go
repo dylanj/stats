@@ -17,11 +17,8 @@ type User struct {
 	NetworkID  uint
 	MessageIDs []uint
 
-	LastSeen time.Time
-}
-
-func (u *User) String() string {
-	return fmt.Sprintf("User: %s Messages:(%d)", u.Nick, len(u.MessageIDs))
+	LastSeen       time.Time
+	MaxConsecutive uint
 }
 
 func NewUser(id uint, network *Network, nick string) *User {
@@ -51,4 +48,8 @@ func (u *User) RandomMessageID() uint {
 	count := len(u.MessageIDs)
 	id := rand.Intn(count)
 	return u.MessageIDs[id]
+}
+
+func (u *User) String() string {
+	return fmt.Sprintf("User: %s Messages:(%d)", u.Nick, len(u.MessageIDs))
 }

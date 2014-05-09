@@ -3,6 +3,7 @@ package stats
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 type Network struct {
@@ -16,6 +17,8 @@ type Network struct {
 	ChannelIDs []uint
 	UserIDs    []uint
 	MessageIDs []uint
+
+	LastActive time.Time
 
 	channels map[string]*Channel
 	users    map[string]*User
@@ -44,6 +47,8 @@ func (n *Network) addMessage(m *Message) {
 	n.Quotes.addMessage(m)
 	n.URLCounter.addMessage(m)
 	n.WordCounter.addMessage(m)
+
+	n.LastActive = m.Date
 }
 
 // buildIndexes builds the internal maps that relate data

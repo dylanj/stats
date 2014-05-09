@@ -10,6 +10,7 @@ type Channel struct {
 	URLCounter
 	WordCounter
 	Quotes quotes
+	ConsecutiveLines
 
 	ID         uint
 	Name       string
@@ -44,7 +45,7 @@ func (c *Channel) String() string {
 }
 
 // AddMessageID adds a message id to the list of message ids.
-func (c *Channel) addMessage(m *Message) {
+func (c *Channel) addMessage(m *Message, u *User) {
 	c.MessageIDs = append(c.MessageIDs, m.ID)
 
 	c.addUserID(m.UserID)
@@ -54,6 +55,7 @@ func (c *Channel) addMessage(m *Message) {
 	c.Quotes.addMessage(m)
 	c.URLCounter.addMessage(m)
 	c.WordCounter.addMessage(m)
+	c.ConsecutiveLines.addMessage(m, u)
 
 	c.LastActive = m.Date
 }
