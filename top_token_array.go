@@ -5,8 +5,8 @@ const topTokenMaxSize = 50
 type TopTokenArray []TopToken
 
 type TopToken struct {
-	Token string
-	Count uint
+	Token string `json:"token"`
+	Count uint   `json:"count"`
 }
 
 func (a *TopTokenArray) insert(token string, count uint) {

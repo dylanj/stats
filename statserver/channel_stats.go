@@ -10,19 +10,19 @@ import (
 )
 
 type UserJSON struct {
-	ID             uint
-	Name           string
-	MessageCount   int
-	Message        string
-	HourlyChart    [24]int
-	VocabularySize int
+	ID             uint    `json:"-"`
+	Name           string  `json:"name"`
+	MessageCount   int     `json:"count"`
+	Message        string  `json:"random"`
+	HourlyChart    [24]int `json:"hourly"`
+	VocabularySize int     `json:"vocabulary"`
 }
 
 type ChannelStatsJSON struct {
-	TopUsers    []*UserJSON
-	HourlyChart stats.HourlyChart
-	TopURLs     []stats.TopToken
-	TopWords    []stats.TopToken
+	TopUsers    []*UserJSON       `json:"users"`
+	HourlyChart stats.HourlyChart `json:"hourly"`
+	TopURLs     []stats.TopToken  `json:"urls"`
+	TopWords    []stats.TopToken  `json:"words"`
 }
 
 type ByMessageCount []*UserJSON
