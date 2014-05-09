@@ -3,6 +3,7 @@ stats todo:
 json struct tagz
 visual interface
 
+uints -> uint64s
 *word list (most used words)
 largest/smallest user / channel vocabulary (so unique words)
 use unicodes  \pL <--

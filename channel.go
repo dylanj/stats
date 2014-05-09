@@ -21,7 +21,8 @@ type Channel struct {
 	MessageIDs []uint
 	NetworkID  uint
 
-	LastActive time.Time
+	TopConsecutiveLines TopTokenArray
+	LastActive          time.Time
 }
 
 func newChannel(id uint, network *Network, name string) *Channel {
@@ -34,8 +35,9 @@ func newChannel(id uint, network *Network, name string) *Channel {
 		MessageIDs: make([]uint, 0),
 		NetworkID:  network.ID,
 
-		URLCounter:  NewURLCounter(),
-		WordCounter: NewWordCounter(),
+		URLCounter:       NewURLCounter(),
+		WordCounter:      NewWordCounter(),
+		ConsecutiveLines: NewConsecutiveLines(),
 	}
 }
 
