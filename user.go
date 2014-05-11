@@ -10,6 +10,7 @@ type User struct {
 	HourlyChart
 	Quotes quotes
 	WordCounter
+	BasicTextCounters
 
 	ID         uint
 	Nick       string
@@ -40,6 +41,7 @@ func (u *User) addMessage(m *Message) {
 	u.HourlyChart.addMessage(m)
 	u.Quotes.addMessage(m)
 	u.WordCounter.addMessage(m)
+	u.BasicTextCounters.addMessage(m)
 
 	u.LastSeen = m.Date
 }
