@@ -10,7 +10,7 @@ use unicodes  \pL <--
 
 swearing
 words per line, letters per line
-*total words
+!!!*total words
 
 !!!!consecutive lines
 
