@@ -10,6 +10,7 @@ type User struct {
 	HourlyChart
 	Quotes quotes
 	WordCounter
+	SwearCounter
 	BasicTextCounters
 
 	ID         uint
@@ -29,7 +30,8 @@ func NewUser(id uint, network *Network, nick string) *User {
 		NetworkID:  network.ID,
 		MessageIDs: make([]uint, 0),
 
-		WordCounter: NewWordCounter(),
+		WordCounter:  NewWordCounter(),
+		SwearCounter: NewSwearCounter(),
 	}
 
 	return &user
@@ -41,6 +43,7 @@ func (u *User) addMessage(m *Message) {
 	u.HourlyChart.addMessage(m)
 	u.Quotes.addMessage(m)
 	u.WordCounter.addMessage(m)
+	u.SwearCounter.addMessage(m)
 	u.BasicTextCounters.addMessage(m)
 
 	u.LastSeen = m.Date

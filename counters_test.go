@@ -10,29 +10,29 @@ func TestBasicTextCounters(t *testing.T) {
 
 	c.addMessage(m)
 
-	if c.letters != 12 {
+	if c.Letters != 12 {
 		t.Error("Should have 12 letters.")
 	}
 
-	if c.words != 4 {
+	if c.Words != 4 {
 		t.Error("Should have 4 words.")
 	}
 
-	if c.lines != 1 {
+	if c.Lines != 1 {
 		t.Error("Should have 1 line.")
 	}
 
 	c.addMessage(m)
 
-	if c.letters != 24 {
+	if c.Letters != 24 {
 		t.Error("Should have 24 letters.")
 	}
 
-	if c.words != 8 {
+	if c.Words != 8 {
 		t.Error("Should have 8 words.")
 	}
 
-	if c.lines != 2 {
+	if c.Lines != 2 {
 		t.Error("Should have 2 lines.")
 	}
 }

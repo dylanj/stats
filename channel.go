@@ -9,6 +9,7 @@ type Channel struct {
 	HourlyChart
 	URLCounter
 	WordCounter
+	SwearCounter
 	Quotes quotes
 	ConsecutiveLines
 
@@ -37,6 +38,7 @@ func newChannel(id uint, network *Network, name string) *Channel {
 
 		URLCounter:       NewURLCounter(),
 		WordCounter:      NewWordCounter(),
+		SwearCounter:     NewSwearCounter(),
 		ConsecutiveLines: NewConsecutiveLines(),
 	}
 }
@@ -57,6 +59,7 @@ func (c *Channel) addMessage(m *Message, u *User) {
 	c.Quotes.addMessage(m)
 	c.URLCounter.addMessage(m)
 	c.WordCounter.addMessage(m)
+	c.SwearCounter.addMessage(m)
 	c.ConsecutiveLines.addMessage(m, u)
 
 	c.LastActive = m.Date
