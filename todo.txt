@@ -8,9 +8,9 @@ uints -> uint64s
 !!!!largest/smallest user / channel vocabulary (so unique words)
 use unicodes  \pL <--
 
-swearing
-words per line, letters per line
-!!!*total words
+!!!!swearing
+!!!!words per line, letters per line
+!!!!total words
 
 !!!!consecutive lines
 
