@@ -1,18 +1,18 @@
 stats todo:
 
-json struct tagz
+!!!!json struct tagz
 visual interface
 
 uints -> uint64s
-*word list (most used words)
-largest/smallest user / channel vocabulary (so unique words)
+!!!!*word list (most used words)
+!!!!largest/smallest user / channel vocabulary (so unique words)
 use unicodes  \pL <--
 
 swearing
 words per line, letters per line
 *total words
 
-consecutive lines
+!!!!consecutive lines
 
 smiley faces / sad faces
 questions...  `\w\?`
