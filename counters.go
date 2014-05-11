@@ -18,3 +18,21 @@ func (c *BasicTextCounters) addMessage(message *Message) {
 	c.words += uint64(len(words))
 	c.lines++
 }
+
+// WordsPerLine returns the words per line.
+func (c *BasicTextCounters) WordsPerLine() float64 {
+	if c.lines == 0 {
+		return 0
+	}
+
+	return float64(c.words) / float64(c.lines)
+}
+
+// LettersPerLine returns the letters per line.
+func (c *BasicTextCounters) LettersPerLine() float64 {
+	if c.lines == 0 {
+		return 0
+	}
+
+	return float64(c.letters) / float64(c.lines)
+}
