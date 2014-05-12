@@ -10,10 +10,6 @@ type quotes struct {
 }
 
 func (q *quotes) addMessage(m *Message) {
-	if m.Kind != Msg {
-		return
-	}
-
 	q.Last = m.ID
 
 	if rand.Intn(randomQuoteProbability) == 0 {

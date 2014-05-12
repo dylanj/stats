@@ -15,10 +15,6 @@ func NewConsecutiveLines() ConsecutiveLines {
 
 // addMessage
 func (cl *ConsecutiveLines) addMessage(message *Message, user *User) {
-	if message.Kind != Msg {
-		return
-	}
-
 	if cl.UserID == user.ID {
 		cl.Count++
 

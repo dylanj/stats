@@ -44,12 +44,17 @@ func NewUser(id uint, network *Network, nick string) *User {
 func (u *User) addMessage(m *Message) {
 	u.MessageIDs = append(u.MessageIDs, m.ID)
 
-	u.HourlyChart.addMessage(m)
-	u.Quotes.addMessage(m)
-	u.WordCounter.addMessage(m)
-	u.SwearCounter.addMessage(m)
-	u.EmoticonCounter.addMessage(m)
-	u.BasicTextCounters.addMessage(m)
+	if m.Kind == Msg {
+		u.HourlyChart.addMessage(m)
+		u.Quotes.addMessage(m)
+		u.WordCounter.addMessage(m)
+		u.SwearCounter.addMessage(m)
+		u.EmoticonCounter.addMessage(m)
+		u.BasicTextCounters.addMessage(m)
+		u.QuestionsCount.addMessage(m)
+		u.ExclamationsCount.addMessage(m)
+		u.AllCapsCount.addMessage(m)
+	}
 
 	u.LastSeen = m.Date
 }

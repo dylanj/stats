@@ -82,16 +82,3 @@ func TestQuotesUpdates(t *testing.T) {
 		t.Error("Last message should be set")
 	}
 }
-
-func TestQuotes_AddNonMessage(t *testing.T) {
-	rand.Seed(81) // returns (0,9)
-
-	var q quotes
-	m := &Message{Kind: Join, ID: 4}
-
-	q.addMessage(m)
-
-	if q.Last == 4 || q.Random == 4 {
-		t.Error("Should not add non Msg MsgKinds to quotes")
-	}
-}

@@ -13,6 +13,9 @@ type Channel struct {
 	EmoticonCounter
 	Quotes quotes
 	ConsecutiveLines
+	QuestionsCount
+	ExclamationsCount
+	AllCapsCount
 
 	ID         uint
 	Name       string
@@ -56,14 +59,18 @@ func (c *Channel) addMessage(m *Message, u *User) {
 
 	c.addUserID(m.UserID)
 
-	// stats stuff
-	c.HourlyChart.addMessage(m)
-	c.Quotes.addMessage(m)
-	c.URLCounter.addMessage(m)
-	c.WordCounter.addMessage(m)
-	c.SwearCounter.addMessage(m)
-	c.EmoticonCounter.addMessage(m)
-	c.ConsecutiveLines.addMessage(m, u)
+	if m.Kind == Msg {
+		c.HourlyChart.addMessage(m)
+		c.Quotes.addMessage(m)
+		c.URLCounter.addMessage(m)
+		c.WordCounter.addMessage(m)
+		c.SwearCounter.addMessage(m)
+		c.EmoticonCounter.addMessage(m)
+		c.ConsecutiveLines.addMessage(m, u)
+		c.QuestionsCount.addMessage(m)
+		c.ExclamationsCount.addMessage(m)
+		c.AllCapsCount.addMessage(m)
+	}
 
 	c.LastActive = m.Date
 }

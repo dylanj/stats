@@ -39,10 +39,12 @@ func (n *Network) addUser(u *User) {
 func (n *Network) addMessage(m *Message) {
 	n.MessageIDs = append(n.MessageIDs, m.ID)
 
-	n.HourlyChart.addMessage(m)
-	n.Quotes.addMessage(m)
-	n.URLCounter.addMessage(m)
-	n.WordCounter.addMessage(m)
+	if m.Kind == Msg {
+		n.HourlyChart.addMessage(m)
+		n.Quotes.addMessage(m)
+		n.URLCounter.addMessage(m)
+		n.WordCounter.addMessage(m)
+	}
 
 	n.LastActive = m.Date
 }
@@ -55,9 +57,6 @@ func (n *Network) buildIndexes(s *Stats) {
 
 	for _, cID := range n.ChannelIDs {
 		c := n.stats.Channels[cID]
-
-		// c.URLs.regex = tokenRegexURL
-		// c.WordCounter.regex = tokenRegexURL
 
 		n.channels[c.Name] = c
 	}
