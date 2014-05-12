@@ -1,29 +1,27 @@
-stats todo:
+TODO LIST:
 
-!!!!json struct tagz
-visual interface
+[    ] Visual interface
+[    ] Don't store all messages
 
-uints -> uint64s
-!!!!*word list (most used words)
-!!!!largest/smallest user / channel vocabulary (so unique words)
-use unicodes  \pL <--
+[done] JSON struct tags
+[mayb] Use uint64 instead of uint
+[done] Word list (most used words)
+[done] Largest/smallest user&channel vocabulary
+[    ] Use unicodes for regexes `\pL`
 
-!!!!swearing
-fix swearing word list
-!!!!words per line, letters per line
-!!!!total words
+[done] Swearing counters
+[    ] Use swear word list instead of shitty regex
+[done] WordsPerLine & LettersPerLine
+[done] Total words
+[done] Consecutive lines
 
-!!!!consecutive lines
+[done] Emoticon Counters
+[    ] Number of Questions `\w\?`
+[    ] Number of Exclamations `\w!`
+[    ] Number of All Capital lines `^[\pL ]` ??
 
-!!!!smiley faces / sad faces
-questions...  `\w\?`
-exclamations
-talking in caps -> ^[A-Z ]$
+[    ] Number of Slaps (and with what!)
+[    ] Number of Kicks
+[    ] Topic Changes
+[    ] Mode Changes (ops/deops/voices,devoices)
 
-slaps
-
-received kicks / sent kicks
-
-topics (last n)
-
-ops / deops, voices / devoices
