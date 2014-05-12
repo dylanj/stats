@@ -36,10 +36,6 @@ func (n *Network) addUser(u *User) {
 	n.users[strings.ToLower(u.Nick)] = u
 }
 
-func (n *Network) getUser(name string) *User {
-	return &User{}
-}
-
 func (n *Network) addMessage(m *Message) {
 	n.MessageIDs = append(n.MessageIDs, m.ID)
 

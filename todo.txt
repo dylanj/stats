@@ -15,7 +15,7 @@ fix swearing word list
 
 !!!!consecutive lines
 
-smiley faces / sad faces
+!!!!smiley faces / sad faces
 questions...  `\w\?`
 exclamations
 talking in caps -> ^[A-Z ]$
