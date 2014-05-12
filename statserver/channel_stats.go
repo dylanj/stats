@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"sort"
 
@@ -55,13 +56,18 @@ func ChannelStats(w http.ResponseWriter, s *stats.Stats, n, c string) {
 	enc.Encode(data)
 }
 
+func userStats_RandomMessage(s *stats.Stats, u *stats.User) string {
+	id := rand.Intn(len(u.MessageIDs))
+	return s.MessageIDs[id]
+}
+
 func channelStats_TopUsers(s *stats.Stats, c *stats.Channel) []*UserJSON {
 	var users []*UserJSON
 	users = make([]*UserJSON, 0)
 
 	for id, _ := range c.UserIDs {
 		if u, ok := s.Users[id]; ok {
-			message := s.Messages[u.RandomMessageID()]
+			message := userStats_RandomMessage(s, u)
 
 			user := &UserJSON{
 				ID:             id,

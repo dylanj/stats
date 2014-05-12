@@ -2,7 +2,6 @@ package stats
 
 import (
 	"fmt"
-	"math/rand"
 	"time"
 )
 
@@ -50,12 +49,6 @@ func (u *User) addMessage(m *Message) {
 	u.BasicTextCounters.addMessage(m)
 
 	u.LastSeen = m.Date
-}
-
-func (u *User) RandomMessageID() uint {
-	count := len(u.MessageIDs)
-	id := rand.Intn(count)
-	return u.MessageIDs[id]
 }
 
 func (u *User) String() string {
