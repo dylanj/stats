@@ -16,9 +16,9 @@ TODO LIST:
 [done] Consecutive lines
 
 [done] Emoticon Counters
-[    ] Number of Questions `\w\?`
-[    ] Number of Exclamations `\w!`
-[    ] Number of All Capital lines `^[\pL ]` ??
+[done] Number of Questions `\w\?`
+[done] Number of Exclamations `\w!`
+[done] Number of All Capital lines `^[\pL ]` ??
 
 [    ] Number of Slaps (and with what!)
 [    ] Number of Kicks
