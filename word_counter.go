@@ -21,7 +21,7 @@ func (w *WordCounter) addMessage(m *Message) {
 	words := strings.Fields(m.Message)
 	for _, v := range words {
 		if r := tokenRegexWord.FindStringSubmatch(v); r != nil {
-			w.TokenCounter.addToken(r[1])
+			w.TokenCounter.addToken(strings.ToLower(r[1]))
 		}
 	}
 }

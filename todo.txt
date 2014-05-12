@@ -10,7 +10,7 @@ TODO LIST:
 [    ] Use unicodes for regexes `\pL`
 
 [done] Swearing counters
-[    ] Use swear word list instead of shitty regex
+[done] Use swear word list instead of shitty regex
 [done] WordsPerLine & LettersPerLine
 [done] Total words
 [done] Consecutive lines

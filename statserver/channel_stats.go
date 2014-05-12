@@ -18,6 +18,7 @@ type UserJSON struct {
 	HourlyChart    [24]int          `json:"hourly"`
 	VocabularySize int              `json:"vocabulary"`
 	TopSwears      []stats.TopToken `json:"swears"`
+	SwearCount     uint             `json:"swearcount"`
 }
 
 type ChannelStatsJSON struct {
@@ -26,6 +27,7 @@ type ChannelStatsJSON struct {
 	TopURLs     []stats.TopToken  `json:"urls"`
 	TopWords    []stats.TopToken  `json:"words"`
 	TopSwears   []stats.TopToken  `json:"swears"`
+	SwearCount  uint              `json:"swearcount"`
 }
 
 type ByMessageCount []*UserJSON
@@ -50,6 +52,7 @@ func ChannelStats(w http.ResponseWriter, s *stats.Stats, n, c string) {
 		TopWords:    channel.WordCounter.Top,
 		TopSwears:   channel.SwearCounter.Top,
 		TopUsers:    channelStats_TopUsers(s, channel),
+		SwearCount:  channel.SwearCounter.Count,
 	}
 
 	enc := json.NewEncoder(w)
@@ -78,6 +81,7 @@ func channelStats_TopUsers(s *stats.Stats, c *stats.Channel) []*UserJSON {
 				HourlyChart:    u.HourlyChart,
 				VocabularySize: len(u.WordCounter.All),
 				TopSwears:      u.SwearCounter.Top,
+				SwearCount:     u.SwearCounter.Count,
 			}
 
 			users = append(users, user)
