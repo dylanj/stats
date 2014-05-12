@@ -50,7 +50,7 @@ func newChannel(id uint, network *Network, name string) *Channel {
 
 // String returns a the name of the channel and the number of messages inside.
 func (c *Channel) String() string {
-	return fmt.Sprintf("Channel: %s Messages:(%d)", c.Name, len(c.MessageIDs))
+	return fmt.Sprintf("Channel: %s, Messages: %d", c.Name, len(c.MessageIDs))
 }
 
 // AddMessageID adds a message id to the list of message ids.
