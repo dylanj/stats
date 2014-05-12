@@ -22,3 +22,17 @@ func TestUser_BasicTextCounters(t *testing.T) {
 		t.Error("Should have 6 letters per line")
 	}
 }
+
+func TestUser_EmoticonCounter(t *testing.T) {
+	t.Parallel()
+
+	s := NewStats()
+
+	s.AddMessage(Msg, network, channel, hostmask, time.Now(), "you wanna come over ;) ;)")
+
+	u := s.Users[1]
+
+	if tok := u.TopEmoticon(); tok.Token != ";)" || tok.Count != 2 {
+		t.Error("Should have ;) as top emoticon with 2 uses")
+	}
+}

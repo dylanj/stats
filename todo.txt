@@ -9,6 +9,7 @@ uints -> uint64s
 use unicodes  \pL <--
 
 !!!!swearing
+fix swearing word list
 !!!!words per line, letters per line
 !!!!total words
 
