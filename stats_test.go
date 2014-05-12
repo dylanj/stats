@@ -1,15 +1,14 @@
 package stats
 
 import (
+	"bytes"
 	"testing"
 	"time"
 )
 
 func init() {
 	// override loadDB to avoid fs calls
-	loadDB = func() (*Stats, error) {
-		return nil, nil
-	}
+	fileOpener = &nilFileOpener{}
 }
 
 const (
@@ -247,25 +246,30 @@ func TestStats_buildIndexes(t *testing.T) {
 	}
 }
 
-func TestStats_Save(t *testing.T) {
+func TestStats_SaveLoadDB(t *testing.T) {
 	t.Parallel()
+
+	defer func() {
+		fileOpener = &nilFileOpener{}
+	}()
 
 	s := NewStats()
 	s.AddMessage(Msg, network, channel, hostmask, time.Now(), "some foo")
 
-	if s.Save() != true {
-		t.Error("Should be able to save database")
-	}
-}
+	b := bytes.Buffer{}
+	fileOpener = &fakeFileOpener{&b}
 
-func TestStats_LoadDatabase(t *testing.T) {
+	if s.Save() != true {
+		t.Error("Should be able to create data.db.")
+	}
+
 	s, e := loadDatabase()
 
 	if e != nil {
-		t.Error("Should not be nil")
+		t.Error("Should not be nil.")
 	}
 
 	if len(s.Messages) != 1 {
-		t.Error("Should have loaded 1 message")
+		t.Error("Should have loaded 1 message.")
 	}
 }

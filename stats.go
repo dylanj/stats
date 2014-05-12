@@ -17,7 +17,7 @@ func init() {
 	rand.Seed(time.Now().Unix())
 }
 
-var loadDB = loadDatabase
+var fileOpener FileOpener = osFileOpener{}
 
 type Stats struct {
 	Channels map[uint]*Channel
@@ -35,7 +35,7 @@ type Stats struct {
 
 // NewStats initializes a Stats struct.
 func NewStats() *Stats {
-	s, err := loadDB()
+	s, err := loadDatabase()
 
 	if err != nil {
 		fmt.Printf("Error'd: %v\n", err)
@@ -203,7 +203,7 @@ func (s *Stats) addNetwork(name string) *Network {
 
 // Save writes the statistics to data.db.
 func (s *Stats) Save() bool {
-	f, _ := os.Create("data.db")
+	f, _ := fileOpener.Create("data.db")
 	defer f.Close()
 
 	gz := gzip.NewWriter(f)
@@ -232,12 +232,11 @@ func (s *Stats) buildIndexes() {
 
 // loadDatabase reads data.db and populates a Stats struct.
 func loadDatabase() (*Stats, error) {
-	file, err := os.Open("./data.db")
+	file, err := fileOpener.Open("./data.db")
 	defer file.Close()
 
 	if err != nil {
 		if os.IsNotExist(err) {
-			fmt.Println("Database doesn't exist")
 			return nil, nil
 		} else {
 			fmt.Println("Some other error: %v", err)
