@@ -246,3 +246,26 @@ func TestStats_buildIndexes(t *testing.T) {
 		t.Error("should be able to look up network")
 	}
 }
+
+func TestStats_Save(t *testing.T) {
+	t.Parallel()
+
+	s := NewStats()
+	s.AddMessage(Msg, network, channel, hostmask, time.Now(), "some foo")
+
+	if s.Save() != true {
+		t.Error("Should be able to save database")
+	}
+}
+
+func TestStats_LoadDatabase(t *testing.T) {
+	s, e := loadDatabase()
+
+	if e != nil {
+		t.Error("Should not be nil")
+	}
+
+	if len(s.Messages) != 1 {
+		t.Error("Should have loaded 1 message")
+	}
+}

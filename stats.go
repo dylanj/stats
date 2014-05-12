@@ -202,7 +202,7 @@ func (s *Stats) addNetwork(name string) *Network {
 }
 
 // Save writes the statistics to data.db.
-func (s *Stats) Save() {
+func (s *Stats) Save() bool {
 	f, _ := os.Create("data.db")
 	defer f.Close()
 
@@ -214,7 +214,10 @@ func (s *Stats) Save() {
 
 	if err != nil {
 		log.Fatal("encode error:", err)
+		return false
 	}
+
+	return true
 }
 
 // buildIndexes builds the internal maps that relate data
