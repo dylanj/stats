@@ -83,5 +83,61 @@ func TestBasicTextCounters_LettersPerLine(t *testing.T) {
 	if c.LettersPerLine() != 3 {
 		t.Error("Should have 3 letters per line")
 	}
+}
 
+func TestQuestionsCount(t *testing.T) {
+	t.Parallel()
+
+	var q QuestionsCount
+	q.addMessage(&Message{Message: "hello?"})
+
+	if q != 1 {
+		t.Error("Should have added one question.")
+	}
+
+	q.addMessage(&Message{Message: "hello? is it me you're looking for?"})
+
+	if q != 3 {
+		t.Error("Should have added two more questions.")
+	}
+}
+
+func TestExclamationsCount(t *testing.T) {
+	t.Parallel()
+
+	var e ExclamationsCount
+	e.addMessage(&Message{Message: "No!"})
+
+	if e != 1 {
+		t.Error("Should have added on exclamation.")
+	}
+
+	e.addMessage(&Message{Message: "cant touch this! dun na na na"})
+
+	if e != 2 {
+		t.Error("Should have only picked up one more exclamation.")
+	}
+}
+
+func TestAllCapsCount(t *testing.T) {
+	t.Parallel()
+
+	var a AllCapsCount
+	a.addMessage(&Message{Message: "THIS WONT WoRK"})
+
+	if a != 0 {
+		t.Error("Should not have added an all caps sentence.")
+	}
+
+	a.addMessage(&Message{Message: "YOU CAN READ THIS BETTER IF I TYPE IN CAPS"})
+
+	if a != 1 {
+		t.Error("Should have added one all caps sentence.")
+	}
+
+	a.addMessage(&Message{Message: "!!#$^"})
+
+	if a != 1 {
+		t.Error("Should not have added another all caps sentence.")
+	}
 }

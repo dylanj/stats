@@ -12,6 +12,9 @@ type User struct {
 	SwearCounter
 	EmoticonCounter
 	BasicTextCounters
+	QuestionsCount
+	ExclamationsCount
+	AllCapsCount
 
 	ID         uint
 	Nick       string
