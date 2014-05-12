@@ -1,8 +1,9 @@
 package stats
 
 type TokenCounter struct {
-	All map[string]uint
-	Top TopTokenArray
+	All   map[string]uint
+	Top   TopTokenArray
+	Count uint
 }
 
 // NewTokens initializes the Tokens map.
@@ -18,4 +19,5 @@ func (tc *TokenCounter) addToken(token string) {
 	count := tc.All[token]
 
 	tc.Top.insert(token, count)
+	tc.Count++
 }

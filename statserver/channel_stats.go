@@ -57,8 +57,9 @@ func ChannelStats(w http.ResponseWriter, s *stats.Stats, n, c string) {
 }
 
 func userStats_RandomMessage(s *stats.Stats, u *stats.User) string {
-	id := rand.Intn(len(u.MessageIDs))
-	return s.MessageIDs[id]
+	size := len(u.MessageIDs)
+	id := u.MessageIDs[rand.Intn(size)]
+	return s.Messages[uint(id)].Message
 }
 
 func channelStats_TopUsers(s *stats.Stats, c *stats.Channel) []*UserJSON {
@@ -73,7 +74,7 @@ func channelStats_TopUsers(s *stats.Stats, c *stats.Channel) []*UserJSON {
 				ID:             id,
 				Name:           u.Nick,
 				MessageCount:   len(u.MessageIDs),
-				Message:        message.Message,
+				Message:        message,
 				HourlyChart:    u.HourlyChart,
 				VocabularySize: len(u.WordCounter.All),
 				TopSwears:      u.SwearCounter.Top,

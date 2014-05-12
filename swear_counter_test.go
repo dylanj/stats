@@ -13,6 +13,9 @@ func TestSwearCounter(t *testing.T) {
 	if len(tc.All) != 0 {
 		t.Error("All swears should be empty.")
 	}
+	if tc.Count != 0 {
+		t.Error("Swear count should be empty.")
+	}
 
 	m := &Message{Message: "fuck #fucking fuck!!!"}
 	tc.addMessage(m)
@@ -22,6 +25,9 @@ func TestSwearCounter(t *testing.T) {
 	}
 	if len(tc.All) != 2 {
 		t.Error("All swears should have two unique swears.")
+	}
+	if tc.Count != 3 {
+		t.Error("Should see three swears.")
 	}
 
 	if count, ok := tc.All["fucking"]; !ok {
