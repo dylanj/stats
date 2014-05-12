@@ -38,3 +38,17 @@ func TestNetwork_buildIndexes(t *testing.T) {
 		t.Error("should be able to retrieve user from index")
 	}
 }
+
+func TestNetwork_Stringer(t *testing.T) {
+	t.Parallel()
+
+	n := &Network{
+		Name:       "foo",
+		ChannelIDs: []uint{1, 2, 3},
+		MessageIDs: []uint{1, 2, 3},
+	}
+
+	if n.String() != "Network: foo, Channels: 3, Messages: 3" {
+		t.Error("Didn't return correct string")
+	}
+}
