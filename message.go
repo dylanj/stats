@@ -1,7 +1,6 @@
 package stats
 
 import "time"
-import "fmt"
 
 // MsgKind is the type of message
 type MsgKind int
@@ -27,9 +26,4 @@ type Message struct {
 	ChannelID uint
 	Message   string
 	Kind      MsgKind
-}
-
-func (m *Message) String() string {
-	//return fmt.Sprintf("%s (%s): %s\n", m.User.Name, m.Channel.Name, m.Message)
-	return fmt.Sprintf("hello")
 }
