@@ -59,5 +59,5 @@ func (u *User) RandomMessageID() uint {
 }
 
 func (u *User) String() string {
-	return fmt.Sprintf("User: %s Messages:(%d)", u.Nick, len(u.MessageIDs))
+	return fmt.Sprintf("User: %s, Messages: %d", u.Nick, len(u.MessageIDs))
 }

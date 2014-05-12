@@ -36,3 +36,16 @@ func TestUser_EmoticonCounter(t *testing.T) {
 		t.Error("Should have ;) as top emoticon with 2 uses")
 	}
 }
+
+func TestUser_String(t *testing.T) {
+	t.Parallel()
+
+	u := &User{
+		Nick:       "foo",
+		MessageIDs: []uint{1, 2, 3},
+	}
+
+	if u.String() != "User: foo, Messages: 3" {
+		t.Error("Didn't return correct string")
+	}
+}
