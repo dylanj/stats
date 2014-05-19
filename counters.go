@@ -10,11 +10,11 @@ type BasicTextCounters struct {
 	Letters uint64
 	Lines   uint64
 }
-type SendRecvCounter struct {
+type SendRecvCounters struct {
 	Sent     uint64
 	Received uint64
 }
-type ModeCounter struct {
+type ModeCounters struct {
 	Ops       uint64
 	Deops     uint64
 	Voices    uint64
@@ -26,7 +26,7 @@ type ModeCounter struct {
 }
 
 // addMessage
-func (m *ModeCounter) addMessage(message *Message) {
+func (m *ModeCounters) addMessage(message *Message) {
 	var positive = true
 	for _, c := range message.Message {
 		switch c {

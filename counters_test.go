@@ -5,7 +5,7 @@ import "testing"
 func TestModeCounters(t *testing.T) {
 	t.Parallel()
 
-	c := &ModeCounter{}
+	c := &ModeCounters{}
 	m := &Message{Message: "+obohv-dvoh-pb+oi"}
 
 	c.addMessage(m)
