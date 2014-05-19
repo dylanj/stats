@@ -19,8 +19,8 @@ TODO LIST:
 [done] Number of Exclamations `\w!`
 [done] Number of All Capital lines `^[\pL ]` ??
 
-[    ] Number of Slaps (and with what!)
-[    ] Number of Kicks
-[    ] Topic Changes
-[    ] Mode Changes (ops/deops/voices,devoices)
+[half] Number of Slaps (and with what!)
+[done] Number of Kicks
+[done] Topic Changes
+[done] Mode Changes (ops/deops/voices,devoices)
 

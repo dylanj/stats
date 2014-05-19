@@ -9,6 +9,7 @@ import (
 
 type Channel struct {
 	HourlyChart
+	LastTopics
 	URLCounter
 	WordCounter
 	SwearCounter
@@ -47,6 +48,7 @@ func newChannel(id uint, network *Network, name string) *Channel {
 		SwearCounter:     NewSwearCounter(),
 		EmoticonCounter:  NewEmoticonCounter(),
 		ConsecutiveLines: NewConsecutiveLines(),
+		LastTopics:       NewLastTopics(),
 	}
 }
 
@@ -72,6 +74,10 @@ func (c *Channel) addMessage(m *Message, u *User) {
 		c.QuestionsCount.addMessage(m)
 		c.ExclamationsCount.addMessage(m)
 		c.AllCapsCount.addMessage(m)
+	}
+
+	if m.Kind == Topic {
+		c.LastTopics.addMessage(m)
 	}
 
 	c.LastActive = m.Date
