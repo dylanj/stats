@@ -2,6 +2,47 @@ package stats
 
 import "testing"
 
+func TestModeCounters(t *testing.T) {
+	t.Parallel()
+
+	c := &ModeCounter{}
+	m := &Message{Message: "+obohv-dvoh-pb+oi"}
+
+	c.addMessage(m)
+
+	if c.Ops != 3 {
+		t.Error("Should have three ops.")
+	}
+
+	if c.Deops != 1 {
+		t.Error("Should have one deop.")
+	}
+
+	if c.Voices != 1 {
+		t.Error("Should have one voice.")
+	}
+
+	if c.Devoices != 1 {
+		t.Error("Should have no devoices")
+	}
+
+	if c.Halfops != 1 {
+		t.Error("Should have one halfop")
+	}
+
+	if c.Dehalfops != 1 {
+		t.Error("Should have one dehalfop.")
+	}
+
+	if c.Bans != 1 {
+		t.Error("Should have one ban.")
+	}
+
+	if c.Unbans != 1 {
+		t.Error("Should have no unbans.")
+	}
+}
+
 func TestBasicTextCounters(t *testing.T) {
 	t.Parallel()
 

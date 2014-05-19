@@ -14,6 +14,54 @@ type SendRecvCounter struct {
 	Sent     uint64
 	Received uint64
 }
+type ModeCounter struct {
+	Ops       uint64
+	Deops     uint64
+	Voices    uint64
+	Devoices  uint64
+	Halfops   uint64
+	Dehalfops uint64
+	Bans      uint64
+	Unbans    uint64
+}
+
+// addMessage
+func (m *ModeCounter) addMessage(message *Message) {
+	var positive = true
+	for _, c := range message.Message {
+		switch c {
+		case '+':
+			positive = true
+			continue
+		case '-':
+			positive = false
+		case 'o': // op
+			if positive {
+				m.Ops++
+			} else {
+				m.Deops++
+			}
+		case 'v': // voice
+			if positive {
+				m.Voices++
+			} else {
+				m.Devoices++
+			}
+		case 'h': // halfop
+			if positive {
+				m.Halfops++
+			} else {
+				m.Dehalfops++
+			}
+		case 'b': // ban
+			if positive {
+				m.Bans++
+			} else {
+				m.Unbans++
+			}
+		}
+	}
+}
 
 // WordsPerLine returns the words per line.
 func (c *BasicTextCounters) WordsPerLine() float64 {

@@ -51,12 +51,10 @@ var weechat = &Scanner{
 	part:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t<--\t(?P<nick>.*) \((?P<host>.*)\) has left (?P<channel>(?:&|#)\w+)(?: \((?P<message>.*)\))?$`),
 	kick:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t<--\t(?P<nick>.*) has kicked (?P<target>.*) \((?P<message>.*)\)$`),
 	topic:   regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t--\t(?P<nick>.*) has changed topic for (?P<channel>(?:&|#)\w+) from "(?P<topic>.*)"$`),
-	mode:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t--\tMode (?P<channel>(?:&|#)\w+) \[(?P<mode>[^\]]+)\] by (?P<nick>.*)$`),
+	mode:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t--\tMode (?P<channel>(?:&|#)\w+) \[(?P<mode>\S+)[^\]]*\] by (?P<nick>.*)$`),
 	action:  regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t *\t(?P<nick>.*) (?P<action>.*)$`),
 }
 
-//2013-08-14 09:12:37	--	Aaron has changed topic for #deviate from "< Knio> Man your so good at bc2, wanna show me some pro tips later?  -  < Aaron> You should go with a 250cc bike, they are great for big pussies like me." to "<Scott> I bought a 250cc bike, because I have a soul devouring pussycancer that makes me into a huge pussy-bitch. It drives at the speed of smell."
-// NewDefaultScanner
 func NewDefaultScanner(filename, network, channel, scanner string) *Scanner {
 	var sc *Scanner
 	switch scanner {

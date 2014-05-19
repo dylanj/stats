@@ -15,6 +15,7 @@ type User struct {
 	QuestionsCount
 	ExclamationsCount
 	AllCapsCount
+	ModeCounter
 
 	KickCounters SendRecvCounter
 	SlapCounters SendRecvCounter
@@ -57,6 +58,10 @@ func (u *User) addMessage(m *Message) {
 		u.QuestionsCount.addMessage(m)
 		u.ExclamationsCount.addMessage(m)
 		u.AllCapsCount.addMessage(m)
+	}
+
+	if m.Kind == Mode {
+		u.ModeCounter.addMessage(m)
 	}
 
 	u.LastSeen = m.Date
