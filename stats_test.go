@@ -128,7 +128,7 @@ func TestStats_AddKickMessage(t *testing.T) {
 
 	// add a message by fish
 	s.AddMessage(Msg, network, channel, "fish", time.Now(), "salut")
-	s.AddMessage(Kick, network, channel, "dylan", time.Now(), "fish")
+	s.AddMessage(Kick, network, channel, "dylan", time.Now(), "Fish")
 
 	u2 := n.users["fish"]
 

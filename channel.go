@@ -85,7 +85,7 @@ func (c *Channel) addUserID(id uint) {
 func (c *Channel) addKick(stats *Stats, message *Message) {
 	network := stats.Networks[c.NetworkID]
 
-	targetName := strings.Split(message.Message, " ")[0]
+	targetName := strings.ToLower(strings.Split(message.Message, " ")[0])
 	kickerID := message.UserID
 
 	kicker := stats.Users[kickerID]
