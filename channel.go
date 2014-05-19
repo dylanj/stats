@@ -2,6 +2,7 @@ package stats
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -93,5 +94,27 @@ func (c *Channel) addKick(stats *Stats, message *Message) {
 
 	if target, ok := network.users[targetName]; ok {
 		target.KickCounters.Received++
+	}
+}
+
+var slapsRegex = regexp.MustCompile(`^slaps\s(\w+) around a bit with a large trout`)
+
+// addAction
+func (c *Channel) addAction(stats *Stats, message *Message) {
+	network := stats.Networks[c.NetworkID]
+
+	if m := slapsRegex.FindStringSubmatch(message.Message); m != nil {
+		receiver := network.users[strings.ToLower(m[1])]
+		sender := stats.Users[message.UserID]
+		c.addSlap(sender, receiver)
+	}
+}
+
+// addSlap
+func (c *Channel) addSlap(sender *User, receiver *User) {
+	sender.SlapCounters.Sent++
+
+	if receiver != nil {
+		receiver.SlapCounters.Received++
 	}
 }

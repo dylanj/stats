@@ -118,8 +118,11 @@ func (s *Stats) addMessage(k MsgKind, n *Network, c *Channel, u *User, d time.Ti
 		message.ChannelID = c.ID
 		c.addMessage(message, u)
 
-		if k == Kick {
+		switch k {
+		case Kick:
 			c.addKick(s, message)
+		case Action:
+			c.addAction(s, message)
 		}
 	}
 

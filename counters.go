@@ -10,7 +10,7 @@ type BasicTextCounters struct {
 	Letters uint64
 	Lines   uint64
 }
-type KickCounters struct {
+type SendRecvCounter struct {
 	Sent     uint64
 	Received uint64
 }
