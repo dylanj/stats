@@ -12,6 +12,7 @@ type User struct {
 	SwearCounter
 	EmoticonCounter
 	BasicTextCounters
+	KickCounters
 	QuestionsCount
 	ExclamationsCount
 	AllCapsCount

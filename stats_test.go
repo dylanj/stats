@@ -110,6 +110,44 @@ func TestStats_AddMessage(t *testing.T) {
 	}
 }
 
+func TestStats_AddKickMessage(t *testing.T) {
+	t.Parallel()
+
+	s := NewStats()
+	s.AddMessage(Kick, network, channel, "dylan", time.Now(), "fish")
+
+	n := s.networkByName[network]
+	u := n.users["dylan"]
+
+	if u.KickCounters.Sent != 1 {
+		t.Error("Should have incremented dylan's sent counter.")
+	}
+	if u.KickCounters.Received != 0 {
+		t.Error("Should not have incremented dylan's received counter.")
+	}
+
+	// add a message by fish
+	s.AddMessage(Msg, network, channel, "fish", time.Now(), "salut")
+	s.AddMessage(Kick, network, channel, "dylan", time.Now(), "fish")
+
+	u2 := n.users["fish"]
+
+	if u.KickCounters.Sent != 2 {
+		t.Error("Should have incremented dylan's sent counter.")
+	}
+	if u.KickCounters.Received != 0 {
+		t.Error("Should not have incremented dylan's received counter.")
+	}
+
+	if u2.KickCounters.Sent != 0 {
+		t.Error("Should not have incremented fish's sent counter.")
+	}
+
+	if u2.KickCounters.Received != 1 {
+		t.Error("Should have incremented fish's received counter.")
+	}
+}
+
 func TestStats_AddMessageBlankChannel(t *testing.T) {
 	t.Parallel()
 

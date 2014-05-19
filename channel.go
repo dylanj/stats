@@ -2,6 +2,7 @@ package stats
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -78,4 +79,19 @@ func (c *Channel) addMessage(m *Message, u *User) {
 // AddUserID
 func (c *Channel) addUserID(id uint) {
 	c.UserIDs[id] = struct{}{}
+}
+
+// addKick
+func (c *Channel) addKick(stats *Stats, message *Message) {
+	network := stats.Networks[c.NetworkID]
+
+	targetName := strings.Split(message.Message, " ")[0]
+	kickerID := message.UserID
+
+	kicker := stats.Users[kickerID]
+	kicker.KickCounters.Sent++
+
+	if target, ok := network.users[targetName]; ok {
+		target.KickCounters.Received++
+	}
 }

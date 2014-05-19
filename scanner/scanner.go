@@ -39,17 +39,23 @@ type Scanner struct {
 	quit    *regexp.Regexp
 	action  *regexp.Regexp
 	mode    *regexp.Regexp
+	topic   *regexp.Regexp
 }
 
 var weechat = &Scanner{
 	dateFormat: "2006-01-02 15:04:05",
 
 	message: regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t(?:[@&+])?(?P<nick>[^\s\-]+)\t(?P<message>.*)$`),
-	join:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t-->\t(?P<nick>.*) \((?P<host>.*)\) has joined (?P<channel>.*)$`),
-	quit:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t<--\t(?P<nick>.*) \((?P<host>.*)\) has quit (?P<message>.*)$`),
+	join:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t-->\t(?P<nick>.*) \((?P<host>.*)\) has joined (?P<channel>(?:&|#)\w+)$`),
+	quit:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t<--\t(?P<nick>.*) \((?P<host>.*)\) has quit \((?P<message>.*)\)$`),
 	part:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t<--\t(?P<nick>.*) \((?P<host>.*)\) has left (?P<channel>(?:&|#)\w+)(?: \((?P<message>.*)\))?$`),
+	kick:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t<--\t(?P<nick>.*) has kicked (?P<target>.*) \((?P<message>.*)\)$`),
+	topic:   regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t--\t(?P<nick>.*) has changed topic for (?P<channel>(?:&|#)\w+) from "(?P<topic>.*)"$`),
+	mode:    regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t--\tMode (?P<channel>(?:&|#)\w+) \[(?P<mode>[^\]]+)\] by (?P<nick>.*)$`),
+	action:  regexp.MustCompile(`^(?P<date>[0-9:\- ]*)\t *\t(?P<nick>.*) (?P<action>.*)$`),
 }
 
+//2013-08-14 09:12:37	--	Aaron has changed topic for #deviate from "< Knio> Man your so good at bc2, wanna show me some pro tips later?  -  < Aaron> You should go with a 250cc bike, they are great for big pussies like me." to "<Scott> I bought a 250cc bike, because I have a soul devouring pussycancer that makes me into a huge pussy-bitch. It drives at the speed of smell."
 // NewDefaultScanner
 func NewDefaultScanner(filename, network, channel, scanner string) *Scanner {
 	var sc *Scanner
@@ -171,5 +177,56 @@ func (sc *Scanner) ParseLine(s *stats.Stats, line string) {
 		}
 
 		s.AddMessage(stats.Msg, sc.network, sc.channel, nick, date, message)
+	} else if r = findData(sc.kick, line); r != nil {
+		nick, dateString, target := r["nick"], r["date"], r["target"]
+
+		if len(nick) == 0 || len(dateString) == 0 || len(target) == 0 {
+			return
+		}
+
+		date, err := time.Parse(sc.dateFormat, dateString)
+		if err != nil {
+			return
+		}
+		s.AddMessage(stats.Kick, sc.network, sc.channel, nick, date, target)
+	} else if r = findData(sc.mode, line); r != nil {
+		nick, dateString, mode := r["nick"], r["date"], r["mode"]
+
+		if len(nick) == 0 || len(dateString) == 0 || len(mode) == 0 {
+			return
+		}
+
+		date, err := time.Parse(sc.dateFormat, dateString)
+		if err != nil {
+			return
+		}
+
+		s.AddMessage(stats.Mode, sc.network, sc.channel, nick, date, mode)
+	} else if r = findData(sc.topic, line); r != nil {
+		nick, dateString, topic := r["nick"], r["date"], r["topic"]
+
+		if len(nick) == 0 || len(dateString) == 0 || len(topic) == 0 {
+			return
+		}
+
+		date, err := time.Parse(sc.dateFormat, dateString)
+		if err != nil {
+			return
+		}
+
+		s.AddMessage(stats.Topic, sc.network, sc.channel, nick, date, topic)
+	} else if r = findData(sc.action, line); r != nil {
+		nick, dateString, action := r["nick"], r["date"], r["action"]
+
+		if len(nick) == 0 || len(dateString) == 0 || len(action) == 0 {
+			return
+		}
+
+		date, err := time.Parse(sc.dateFormat, dateString)
+		if err != nil {
+			return
+		}
+
+		s.AddMessage(stats.Action, sc.network, sc.channel, nick, date, action)
 	}
 }

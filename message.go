@@ -9,14 +9,13 @@ type MsgKind int
 const (
 	// Msg is for PRIVMSG and NOTICE messages
 	Msg MsgKind = iota
-	// Part is for ...
 	Part
-	// Join is for ...
 	Join
-	// Quit is for ...
 	Quit
-	// Kick is for ...
 	Kick
+	Mode
+	Topic
+	Action
 )
 
 type Message struct {

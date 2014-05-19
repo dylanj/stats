@@ -10,6 +10,10 @@ type BasicTextCounters struct {
 	Letters uint64
 	Lines   uint64
 }
+type KickCounters struct {
+	Sent     uint64
+	Received uint64
+}
 
 // WordsPerLine returns the words per line.
 func (c *BasicTextCounters) WordsPerLine() float64 {
