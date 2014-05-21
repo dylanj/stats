@@ -14,7 +14,6 @@ type Channel struct {
 	WordCounter
 	SwearCounter
 	EmoticonCounter
-	Quotes quotes
 	ConsecutiveLines
 	QuestionsCount
 	ExclamationsCount
@@ -31,6 +30,7 @@ type Channel struct {
 
 	TopConsecutiveLines TopTokenArray
 	LastActive          time.Time
+	Quotes              quotes
 }
 
 func newChannel(id uint, network *Network, name string) *Channel {
