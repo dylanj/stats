@@ -2,27 +2,27 @@ package stats
 
 import "strings"
 
-type QuestionsCount uint64
-type ExclamationsCount uint64
-type AllCapsCount uint64
+type QuestionsCount uint
+type ExclamationsCount uint
+type AllCapsCount uint
 type BasicTextCounters struct {
-	Words   uint64
-	Letters uint64
-	Lines   uint64
+	Words   uint
+	Letters uint
+	Lines   uint
 }
 type SendRecvCounters struct {
-	Sent     uint64
-	Received uint64
+	Sent     uint
+	Received uint
 }
 type ModeCounters struct {
-	Ops       uint64
-	Deops     uint64
-	Voices    uint64
-	Devoices  uint64
-	Halfops   uint64
-	Dehalfops uint64
-	Bans      uint64
-	Unbans    uint64
+	Ops       uint
+	Deops     uint
+	Voices    uint
+	Devoices  uint
+	Halfops   uint
+	Dehalfops uint
+	Bans      uint
+	Unbans    uint
 }
 
 // addMessage
@@ -126,7 +126,7 @@ func (c *BasicTextCounters) addMessage(message *Message) {
 	letters := strings.Replace(message.Message, " ", "", -1)
 
 	// maybe use a regex to filter out ^a-z
-	c.Letters += uint64(len(letters))
-	c.Words += uint64(len(words))
+	c.Letters += uint(len(letters))
+	c.Words += uint(len(words))
 	c.Lines++
 }
