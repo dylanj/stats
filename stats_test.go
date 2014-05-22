@@ -71,6 +71,10 @@ func TestStats_AddMessage(t *testing.T) {
 		t.Error("It should add the user.")
 	}
 
+	if len(s.Users[1].ChannelUsers) != 1 {
+		t.Error("Should have added a channel user.")
+	}
+
 	if len(s.Networks[1].WordCounter.All) != 2 {
 		t.Error("It should add the two words in the message.")
 	}
@@ -87,18 +91,22 @@ func TestStats_AddMessage(t *testing.T) {
 		t.Error("It should add the URL in the message.")
 	}
 
-	s.AddMessage(Msg, network, channel, hostmask, time.Now(), "some foo")
+	s.AddMessage(Msg, network, "#channel2", hostmask, time.Now(), "some foo")
 
 	if len(s.Networks) > 1 {
 		t.Error("It should not add another network.")
 	}
 
-	if len(s.Channels) > 1 {
-		t.Error("It should not add another channel.")
+	if len(s.Channels) != 2 {
+		t.Error("It should have added another channel.")
 	}
 
 	if len(s.Users) > 1 {
 		t.Error("It should not add another user.")
+	}
+
+	if len(s.Users[1].ChannelUsers) != 2 {
+		t.Error("Should have added another channel user.")
 	}
 }
 
