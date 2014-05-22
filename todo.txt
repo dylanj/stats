@@ -1,9 +1,10 @@
 TODO LIST:
 [    ] Visual interface
+[    ] Output all JSON data
 [done] Don't store all messages
 
 [done] JSON struct tags
-[mayb] Use uint64 instead of uint
+[done] Use uint64 instead of uint
 [done] Word list (most used words)
 [done] Largest/smallest user&channel vocabulary
 [    ] Use unicodes for regexes `\pL`

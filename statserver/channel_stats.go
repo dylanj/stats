@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"sort"
 
@@ -11,14 +10,27 @@ import (
 )
 
 type UserJSON struct {
-	ID             uint             `json:"-"`
-	Name           string           `json:"name"`
-	MessageCount   int              `json:"count"`
-	Message        string           `json:"random"`
-	HourlyChart    [24]int          `json:"hourly"`
-	VocabularySize int              `json:"vocabulary"`
-	TopSwears      []stats.TopToken `json:"swears"`
-	SwearCount     uint             `json:"swearcount"`
+	ID             uint                    `json:"-"`
+	Name           string                  `json:"name"`
+	MessageCount   uint                    `json:"count"`
+	Message        string                  `json:"random"`
+	HourlyChart    [24]int                 `json:"hourly"`
+	VocabularySize int                     `json:"vocabulary"`
+	TopSwears      []stats.TopToken        `json:"swears"`
+	SwearCount     uint                    `json:"swearcount"`
+	Vocabulary     []stats.TopToken        `json:"vocab"`
+	Emoticons      []stats.TopToken        `json:"emoticons"`
+	EmoticonCount  uint                    `json:"emoticoncount"`
+	Questions      uint                    `json:"questions"`
+	Exclamations   uint                    `json:"exclamations"`
+	AllCaps        uint                    `json:"allcaps"`
+	SKicks         uint                    `json:"skicks"`
+	RKicks         uint                    `json:"rkicks"`
+	SSlaps         uint                    `json:"sslaps"`
+	RSlaps         uint                    `json:"rslaps"`
+	NickReferences map[string]uint         `json:"nickreferences"`
+	Modes          stats.ModeCounters      `json:"modes"`
+	Basic          stats.BasicTextCounters `json:"basic"`
 }
 
 type ChannelStatsJSON struct {
@@ -59,29 +71,40 @@ func ChannelStats(w http.ResponseWriter, s *stats.Stats, n, c string) {
 	enc.Encode(data)
 }
 
-func userStats_RandomMessage(s *stats.Stats, u *stats.User) string {
-	size := len(u.MessageIDs)
-	id := u.MessageIDs[rand.Intn(size)]
-	return s.Messages[uint(id)].Message
-}
-
 func channelStats_TopUsers(s *stats.Stats, c *stats.Channel) []*UserJSON {
 	var users []*UserJSON
 	users = make([]*UserJSON, 0)
 
 	for id, _ := range c.UserIDs {
 		if u, ok := s.Users[id]; ok {
-			message := userStats_RandomMessage(s, u)
+
+			fmt.Printf("%#v\n\n\n", u.Quotes)
 
 			user := &UserJSON{
 				ID:             id,
 				Name:           u.Nick,
-				MessageCount:   len(u.MessageIDs),
-				Message:        message,
+				MessageCount:   u.BasicTextCounters.Lines,
 				HourlyChart:    u.HourlyChart,
+				Vocabulary:     u.WordCounter.Top,
 				VocabularySize: len(u.WordCounter.All),
 				TopSwears:      u.SwearCounter.Top,
 				SwearCount:     u.SwearCounter.Count,
+				Emoticons:      u.EmoticonCounter.Top,
+				EmoticonCount:  u.EmoticonCounter.Count,
+				Questions:      uint(u.QuestionsCount),
+				Exclamations:   uint(u.ExclamationsCount),
+				AllCaps:        uint(u.AllCapsCount),
+				SKicks:         u.KickCounters.Sent,
+				RKicks:         u.KickCounters.Received,
+				SSlaps:         u.SlapCounters.Sent,
+				RSlaps:         u.SlapCounters.Received,
+				NickReferences: u.NickReferences,
+				Modes:          u.ModeCounters,
+				Basic:          u.BasicTextCounters,
+			}
+
+			if m := u.Quotes.Random; m != nil {
+				user.Message = u.Quotes.Random.Message
 			}
 
 			users = append(users, user)
