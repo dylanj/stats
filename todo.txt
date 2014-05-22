@@ -10,7 +10,7 @@ TODO LIST:
 [    ] Finish Scanner
 [    ] Clean up exported functions/types
 
-[    ] Referened Nicks
+[done] Referened Nicks
 [done] Swearing counters
 [done] Use swear word list instead of shitty regex
 [done] WordsPerLine & LettersPerLine
