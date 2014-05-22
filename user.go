@@ -15,6 +15,7 @@ type User struct {
 	AllCapsCount
 	BasicTextCounters
 	ModeCounters
+	NickReferences
 
 	KickCounters SendRecvCounters
 	SlapCounters SendRecvCounters
@@ -42,6 +43,7 @@ func NewUser(id uint, networkID uint, nick string) *User {
 		WordCounter:     NewWordCounter(),
 		SwearCounter:    NewSwearCounter(),
 		EmoticonCounter: NewEmoticonCounter(),
+		NickReferences:  make(NickReferences),
 	}
 
 	return &user
@@ -54,26 +56,27 @@ func (u *User) addChannelUser(channel string) *User {
 	return cu
 }
 
-func (u *User) addMessage(m *Message) {
-	u.MessageIDs = append(u.MessageIDs, m.ID)
+func (u *User) addMessage(network *Network, channel *Channel, message *Message) {
+	u.MessageIDs = append(u.MessageIDs, message.ID)
 
-	if m.Kind == Msg {
-		u.HourlyChart.addMessage(m)
-		u.Quotes.addMessage(m)
-		u.WordCounter.addMessage(m)
-		u.SwearCounter.addMessage(m)
-		u.EmoticonCounter.addMessage(m)
-		u.BasicTextCounters.addMessage(m)
-		u.QuestionsCount.addMessage(m)
-		u.ExclamationsCount.addMessage(m)
-		u.AllCapsCount.addMessage(m)
+	if message.Kind == Msg {
+		u.HourlyChart.addMessage(message)
+		u.Quotes.addMessage(message)
+		u.WordCounter.addMessage(message)
+		u.SwearCounter.addMessage(message)
+		u.EmoticonCounter.addMessage(message)
+		u.BasicTextCounters.addMessage(message)
+		u.QuestionsCount.addMessage(message)
+		u.ExclamationsCount.addMessage(message)
+		u.AllCapsCount.addMessage(message)
+		u.NickReferences.addMessage(network, channel, message)
 	}
 
-	if m.Kind == Mode {
-		u.ModeCounters.addMessage(m)
+	if message.Kind == Mode {
+		u.ModeCounters.addMessage(message)
 	}
 
-	u.LastSeen = m.Date
+	u.LastSeen = message.Date
 }
 
 func (u *User) String() string {

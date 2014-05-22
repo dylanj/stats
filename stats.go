@@ -126,12 +126,12 @@ func (s *Stats) addMessage(k MsgKind, n *Network, c *Channel, u *User, cu *User,
 		}
 
 		if cu != nil {
-			cu.addMessage(message)
+			cu.addMessage(n, c, message)
 		}
 	}
 
 	n.addMessage(message)
-	u.addMessage(message)
+	u.addMessage(n, c, message)
 
 	return message
 }
