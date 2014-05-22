@@ -7,18 +7,18 @@ import (
 
 type User struct {
 	HourlyChart
-	Quotes quotes
 	WordCounter
 	SwearCounter
 	EmoticonCounter
-	BasicTextCounters
 	QuestionsCount
 	ExclamationsCount
 	AllCapsCount
+	BasicTextCounters
 	ModeCounters
 
 	KickCounters SendRecvCounters
 	SlapCounters SendRecvCounters
+	Quotes       quotes
 
 	ID           uint
 	Nick         string
