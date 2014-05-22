@@ -18,6 +18,7 @@ type Channel struct {
 	QuestionsCount
 	ExclamationsCount
 	AllCapsCount
+	NickReferences
 
 	ID         uint
 	Name       string
@@ -49,6 +50,7 @@ func newChannel(id uint, network *Network, name string) *Channel {
 		EmoticonCounter:  NewEmoticonCounter(),
 		ConsecutiveLines: NewConsecutiveLines(),
 		LastTopics:       NewLastTopics(),
+		NickReferences:   make(NickReferences),
 	}
 }
 
@@ -58,29 +60,30 @@ func (c *Channel) String() string {
 }
 
 // AddMessageID adds a message id to the list of message ids.
-func (c *Channel) addMessage(m *Message, u *User) {
-	c.MessageIDs = append(c.MessageIDs, m.ID)
+func (c *Channel) addMessage(network *Network, message *Message, user *User) {
+	c.MessageIDs = append(c.MessageIDs, message.ID)
 
-	c.addUserID(m.UserID)
+	c.addUserID(message.UserID)
 
-	if m.Kind == Msg {
-		c.HourlyChart.addMessage(m)
-		c.Quotes.addMessage(m)
-		c.URLCounter.addMessage(m)
-		c.WordCounter.addMessage(m)
-		c.SwearCounter.addMessage(m)
-		c.EmoticonCounter.addMessage(m)
-		c.ConsecutiveLines.addMessage(m, u)
-		c.QuestionsCount.addMessage(m)
-		c.ExclamationsCount.addMessage(m)
-		c.AllCapsCount.addMessage(m)
+	if message.Kind == Msg {
+		c.HourlyChart.addMessage(message)
+		c.Quotes.addMessage(message)
+		c.URLCounter.addMessage(message)
+		c.WordCounter.addMessage(message)
+		c.SwearCounter.addMessage(message)
+		c.EmoticonCounter.addMessage(message)
+		c.ConsecutiveLines.addMessage(message, user)
+		c.QuestionsCount.addMessage(message)
+		c.ExclamationsCount.addMessage(message)
+		c.AllCapsCount.addMessage(message)
+		c.NickReferences.addMessage(network, c, message)
 	}
 
-	if m.Kind == Topic {
-		c.LastTopics.addMessage(m)
+	if message.Kind == Topic {
+		c.LastTopics.addMessage(message)
 	}
 
-	c.LastActive = m.Date
+	c.LastActive = message.Date
 }
 
 // AddUserID

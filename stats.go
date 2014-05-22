@@ -116,7 +116,7 @@ func (s *Stats) addMessage(k MsgKind, n *Network, c *Channel, u *User, cu *User,
 
 	if c != nil {
 		message.ChannelID = c.ID
-		c.addMessage(message, u)
+		c.addMessage(n, message, u)
 
 		switch k {
 		case Kick:
