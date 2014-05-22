@@ -1,13 +1,16 @@
 TODO LIST:
 [    ] Visual interface
-[    ] Don't store all messages
+[done] Don't store all messages
 
 [done] JSON struct tags
 [mayb] Use uint64 instead of uint
 [done] Word list (most used words)
 [done] Largest/smallest user&channel vocabulary
 [    ] Use unicodes for regexes `\pL`
+[    ] Finish Scanner
+[    ] Clean up exported functions/types
 
+[    ] Referened Nicks
 [done] Swearing counters
 [done] Use swear word list instead of shitty regex
 [done] WordsPerLine & LettersPerLine

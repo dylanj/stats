@@ -36,6 +36,7 @@ func TestHourlyChartUpdates(t *testing.T) {
 	n := s.addNetwork(network)
 	c := s.addChannel(n, channel)
 	u := s.addUser(n, nick)
+	cu := u.addChannelUser(channel)
 
 	date := time.Now()
 	hour := date.Hour()
@@ -52,7 +53,7 @@ func TestHourlyChartUpdates(t *testing.T) {
 		t.Error("User's chart should not have data in it")
 	}
 
-	s.addMessage(Msg, n, c, u, date, "nihao")
+	s.addMessage(Msg, n, c, u, cu, date, "nihao")
 
 	if n.HourlyChart[hour] != 1 {
 		t.Error("Networks's chart should have data in it")

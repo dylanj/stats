@@ -12,21 +12,21 @@ func TestQuotes(t *testing.T) {
 	var q quotes
 	m := &Message{ID: 4}
 
-	if q.Random != 0 {
+	if q.Random != nil {
 		t.Error("Random message should not be set.")
 	}
 
-	if q.Last != 0 {
+	if q.Last != nil {
 		t.Error("Last message should not be set.")
 	}
 
 	q.addMessage(m)
 
-	if q.Random != m.ID {
+	if q.Random != m {
 		t.Error("Random message should be set")
 	}
 
-	if q.Last != m.ID {
+	if q.Last != m {
 		t.Error("Last message should be set")
 	}
 
@@ -34,51 +34,53 @@ func TestQuotes(t *testing.T) {
 
 	q.addMessage(m2)
 
-	if q.Random != m.ID {
+	if q.Random != m {
 		t.Error("Random message should not change")
 	}
 
-	if q.Last != m2.ID {
+	if q.Last != m2 {
 		t.Error("Last message be updated")
 	}
 }
 
 func TestQuotesUpdates(t *testing.T) {
-	rand.Seed(111) // returns (0,0,0)
+	rand.Seed(7075) // returns (0,0,0,0) - dont ask
 	s := NewStats()
 	n := s.addNetwork(network)
 	c := s.addChannel(n, channel)
 	u := s.addUser(n, nick)
+	cu := u.addChannelUser(channel)
 
-	if n.Quotes.Last != 0 && n.Quotes.Random != 0 {
+	if n.Quotes.Last != nil && n.Quotes.Random != nil {
 		t.Error("Last message and random message should not be set.")
 	}
-	if c.Quotes.Last != 0 && c.Quotes.Random != 0 {
+	if c.Quotes.Last != nil && c.Quotes.Random != nil {
 		t.Error("Last message and random message should not be set.")
 	}
-	if u.Quotes.Last != 0 && u.Quotes.Random != 0 {
+	if u.Quotes.Last != nil && u.Quotes.Random != nil {
 		t.Error("Last message and random message should not be set.")
 	}
 
-	s.addMessage(Msg, n, c, u, time.Now(), "nihao")
+	m := s.addMessage(Msg, n, c, u, cu, time.Now(), "nihao")
 
-	if n.Quotes.Random != 1 {
+	if n.Quotes.Random != m {
 		t.Error("Random message should be set")
 	}
-	if c.Quotes.Random != 1 {
-		t.Error("Random message should be set")
-	}
-	if u.Quotes.Random != 1 {
+	if c.Quotes.Random != m {
 		t.Error("Random message should be set")
 	}
 
-	if n.Quotes.Last != 1 {
+	if u.Quotes.Random != m {
+		t.Error("Random message should be set")
+	}
+
+	if n.Quotes.Last != m {
 		t.Error("Last message should be set")
 	}
-	if c.Quotes.Last != 1 {
+	if c.Quotes.Last != m {
 		t.Error("Last message should be set")
 	}
-	if u.Quotes.Last != 1 {
+	if u.Quotes.Last != m {
 		t.Error("Last message should be set")
 	}
 }

@@ -5,14 +5,14 @@ import "math/rand"
 const randomQuoteProbability = 10
 
 type quotes struct {
-	Last   uint
-	Random uint
+	Last   *Message
+	Random *Message
 }
 
 func (q *quotes) addMessage(m *Message) {
-	q.Last = m.ID
+	q.Last = m
 
 	if rand.Intn(randomQuoteProbability) == 0 {
-		q.Random = m.ID
+		q.Random = m
 	}
 }

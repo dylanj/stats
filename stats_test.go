@@ -71,10 +71,6 @@ func TestStats_AddMessage(t *testing.T) {
 		t.Error("It should add the user.")
 	}
 
-	if len(s.Messages) != 1 {
-		t.Error("It should add the message.")
-	}
-
 	if len(s.Networks[1].WordCounter.All) != 2 {
 		t.Error("It should add the two words in the message.")
 	}
@@ -103,10 +99,6 @@ func TestStats_AddMessage(t *testing.T) {
 
 	if len(s.Users) > 1 {
 		t.Error("It should not add another user.")
-	}
-
-	if len(s.Messages) != 2 {
-		t.Error("It should add the message.")
 	}
 }
 
@@ -347,7 +339,7 @@ func TestStats_SaveLoadDB(t *testing.T) {
 		t.Error("Should not be nil.")
 	}
 
-	if len(s.Messages) != 1 {
-		t.Error("Should have loaded 1 message.")
+	if len(s.Users) == 0 || len(s.Channels) == 0 || len(s.Networks) == 0 {
+		t.Error("Should have loaded DB.")
 	}
 }

@@ -21,7 +21,6 @@ var fileOpener FileOpener = osFileOpener{}
 
 type Stats struct {
 	Channels map[uint]*Channel
-	Messages map[uint]*Message
 	Networks map[uint]*Network
 	Users    map[uint]*User
 
@@ -49,7 +48,6 @@ func NewStats() *Stats {
 	// load from stats.db
 	return &Stats{
 		Channels: make(map[uint]*Channel),
-		Messages: make(map[uint]*Message),
 		Networks: make(map[uint]*Network),
 		Users:    make(map[uint]*User),
 
@@ -89,6 +87,7 @@ func (s *Stats) GetUser(network, nick string) *User {
 func (s *Stats) AddMessage(kind MsgKind, network string, channel string, hostmask string, date time.Time, message string) {
 
 	var c *Channel
+	var cu *User
 
 	n := s.getNetwork(network)
 	u := s.getUser(n, hostmask)
@@ -96,12 +95,13 @@ func (s *Stats) AddMessage(kind MsgKind, network string, channel string, hostmas
 	// channel can be blank (for example a QUIT message has no channel)
 	if channel != "" {
 		c = s.getChannel(n, channel)
+		cu = s.getChannelUser(u, channel)
 	}
 
-	s.addMessage(kind, n, c, u, date, message)
+	s.addMessage(kind, n, c, u, cu, date, message)
 }
 
-func (s *Stats) addMessage(k MsgKind, n *Network, c *Channel, u *User, d time.Time, m string) {
+func (s *Stats) addMessage(k MsgKind, n *Network, c *Channel, u *User, cu *User, d time.Time, m string) *Message {
 	id := s.MessageIDCount
 	s.MessageIDCount++
 
@@ -124,12 +124,16 @@ func (s *Stats) addMessage(k MsgKind, n *Network, c *Channel, u *User, d time.Ti
 		case Action:
 			c.addAction(s, message)
 		}
+
+		if cu != nil {
+			cu.addMessage(message)
+		}
 	}
 
 	n.addMessage(message)
 	u.addMessage(message)
 
-	s.Messages[id] = message
+	return message
 }
 
 func (s *Stats) addChannel(n *Network, name string) *Channel {
@@ -149,13 +153,23 @@ func (s *Stats) addUser(n *Network, nick string) *User {
 	id := s.UserIDCount
 	s.UserIDCount++
 
-	u := NewUser(id, n, nick)
+	u := NewUser(id, n.ID, nick)
 
 	s.Users[id] = u
 
 	n.addUser(u)
 
 	return u
+}
+
+// getChannelUser
+func (s *Stats) getChannelUser(user *User, channel string) *User {
+	channel = strings.ToLower(channel)
+	if cu, ok := user.ChannelUsers[channel]; ok {
+		return cu
+	} else {
+		return user.addChannelUser(channel)
+	}
 }
 
 func (s *Stats) getUser(n *Network, nameOrHost string) *User {

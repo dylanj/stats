@@ -20,22 +20,24 @@ type User struct {
 	KickCounters SendRecvCounters
 	SlapCounters SendRecvCounters
 
-	ID         uint
-	Nick       string
-	Hostmask   string
-	NetworkID  uint
-	MessageIDs []uint
+	ID           uint
+	Nick         string
+	Hostmask     string
+	NetworkID    uint
+	MessageIDs   []uint
+	ChannelUsers map[string]*User
 
 	LastSeen       time.Time
 	MaxConsecutive uint
 }
 
-func NewUser(id uint, network *Network, nick string) *User {
+func NewUser(id uint, networkID uint, nick string) *User {
 	user := User{
-		ID:         id,
-		Nick:       nick,
-		NetworkID:  network.ID,
-		MessageIDs: make([]uint, 0),
+		ID:           id,
+		Nick:         nick,
+		NetworkID:    networkID,
+		MessageIDs:   make([]uint, 0),
+		ChannelUsers: make(map[string]*User),
 
 		WordCounter:     NewWordCounter(),
 		SwearCounter:    NewSwearCounter(),
@@ -43,6 +45,13 @@ func NewUser(id uint, network *Network, nick string) *User {
 	}
 
 	return &user
+}
+
+// newChannelUser
+func (u *User) addChannelUser(channel string) *User {
+	cu := NewUser(u.ID, u.NetworkID, u.Nick)
+	u.ChannelUsers[channel] = cu
+	return cu
 }
 
 func (u *User) addMessage(m *Message) {
