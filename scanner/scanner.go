@@ -211,9 +211,9 @@ func (sc *scanner) parseReader(s *stats.Stats, r io.Reader) error {
 func (sc *scanner) parseLine(s *stats.Stats, line string) {
 	if r := findData(sc.parser.join, line); r != nil {
 
-		nick, dateString, channel := r["nick"], r["date"], r["channel"]
+		nick, dateString, _ := r["nick"], r["date"], r["channel"]
 
-		if len(nick) == 0 || len(dateString) == 0 || len(channel) == 0 {
+		if len(nick) == 0 || len(dateString) == 0 {
 			return
 		}
 
@@ -222,13 +222,13 @@ func (sc *scanner) parseLine(s *stats.Stats, line string) {
 			return
 		}
 
-		s.AddMessage(stats.Join, sc.network, channel, nick, date, "")
+		s.AddMessage(stats.Join, sc.network, sc.channel, nick, date, "")
 
 	} else if r := findData(sc.parser.part, line); r != nil {
 
-		nick, dateString, channel, message := r["nick"], r["date"], r["channel"], r["message"]
+		nick, dateString, _, message := r["nick"], r["date"], r["channel"], r["message"]
 
-		if len(nick) == 0 || len(dateString) == 0 || len(channel) == 0 {
+		if len(nick) == 0 || len(dateString) == 0 {
 			return
 		}
 
@@ -237,7 +237,7 @@ func (sc *scanner) parseLine(s *stats.Stats, line string) {
 			return
 		}
 
-		s.AddMessage(stats.Part, sc.network, channel, nick, date, message)
+		s.AddMessage(stats.Part, sc.network, sc.channel, nick, date, message)
 
 	} else if r = findData(sc.parser.quit, line); r != nil {
 
