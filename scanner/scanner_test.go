@@ -21,23 +21,29 @@ const weechatFile = weechatJoin + "\n" + weechatQuit + "\n" +
 	weechatMessage + "\n" + weechatPart + "\n" +
 	weechatPartMessage + "\n"
 
-func Benchmark_ParseLine(b *testing.B) {
+func Benchmark_parseLine(b *testing.B) {
 	s := stats.NewStats()
 
-	sc := NewDefaultScanner("file", "network", "#deviate", "weechat")
+	sc, err := newScanner("network", "#deviate", "weechat", "file")
+	if err != nil {
+		b.Fatal(err)
+	}
 
 	for i := 0; i < b.N; i++ {
-		sc.ParseLine(s, weechatMessage)
+		sc.parseLine(s, weechatMessage)
 	}
 }
 
-func TestScanner_ParseLine_Quit(t *testing.T) {
+func TestScanner_parseLine_Quit(t *testing.T) {
 	t.Parallel()
 	s := stats.NewStats()
 
-	sc := NewDefaultScanner("file", "network", "#deviate", "weechat")
+	sc, err := newScanner("network", "#deviate", "weechat", "file")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	sc.ParseLine(s, weechatQuit)
+	sc.parseLine(s, weechatQuit)
 
 	var m *stats.Message
 	if m = s.Messages[1]; m == nil {
@@ -53,42 +59,51 @@ func TestScanner_ParseLine_Quit(t *testing.T) {
 	}
 }
 
-func TestScanner_ParseLine_Action(t *testing.T) {
+func TestScanner_parseLine_Action(t *testing.T) {
 	t.Parallel()
 
 	s := stats.NewStats()
 
-	sc := NewDefaultScanner("file", "network", "#deviate", "weechat")
+	sc, err := newScanner("network", "#deviate", "weechat", "file")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	sc.ParseLine(s, weechatAction)
+	sc.parseLine(s, weechatAction)
 
 	if len(s.Messages) > 0 {
 		t.Error("It should ignore action messages (for now)")
 	}
 }
 
-func TestScanner_ParseLine_Topic(t *testing.T) {
+func TestScanner_parseLine_Topic(t *testing.T) {
 	t.Parallel()
 
 	s := stats.NewStats()
 
-	sc := NewDefaultScanner("file", "network", "#deviate", "weechat")
+	sc, err := newScanner("network", "#deviate", "weechat", "file")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	sc.ParseLine(s, weechatTopic)
+	sc.parseLine(s, weechatTopic)
 
 	if len(s.Messages) > 0 {
 		t.Error("It should ignore topic messages (for now)")
 	}
 }
 
-func TestScanner_ParseLine_Message(t *testing.T) {
+func TestScanner_parseLine_Message(t *testing.T) {
 	t.Parallel()
 
 	s := stats.NewStats()
 
-	sc := NewDefaultScanner("file", "network", "#deviate", "weechat")
+	sc, err := newScanner("network", "#deviate", "weechat", "file")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	sc.ParseLine(s, weechatMessage)
+	sc.parseLine(s, weechatMessage)
 
 	var m *stats.Message
 	if m = s.Messages[1]; m == nil {
@@ -100,14 +115,17 @@ func TestScanner_ParseLine_Message(t *testing.T) {
 	}
 }
 
-func TestScanner_ParseLine_PartWithMessage(t *testing.T) {
+func TestScanner_parseLine_PartWithMessage(t *testing.T) {
 	t.Parallel()
 
 	s := stats.NewStats()
 
-	sc := NewDefaultScanner("file", "network", "#deviate", "weechat")
+	sc, err := newScanner("network", "#deviate", "weechat", "file")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	sc.ParseLine(s, weechatPartMessage)
+	sc.parseLine(s, weechatPartMessage)
 
 	var m *stats.Message
 	if m = s.Messages[1]; m == nil {
@@ -123,14 +141,17 @@ func TestScanner_ParseLine_PartWithMessage(t *testing.T) {
 	}
 }
 
-func TestScanner_ParseLine_Join(t *testing.T) {
+func TestScanner_parseLine_Join(t *testing.T) {
 	t.Parallel()
 
 	s := stats.NewStats()
 
-	sc := NewDefaultScanner("file", "network", "#deviate", "weechat")
+	sc, err := newScanner("network", "#deviate", "weechat", "file")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	sc.ParseLine(s, weechatJoin)
+	sc.parseLine(s, weechatJoin)
 
 	var m *stats.Message
 	if m = s.Messages[1]; m == nil {
@@ -142,19 +163,18 @@ func TestScanner_ParseLine_Join(t *testing.T) {
 	}
 }
 
-func TestScanner_NewDefaultScanner(t *testing.T) {
+func TestScanner_NewScanner(t *testing.T) {
 	t.Parallel()
 
-	var s *Scanner
-	if s = NewDefaultScanner("file", "foo", "bar", "baz"); s != nil {
-		t.Error("Should return nil when unknown scanner specified.")
-	}
-
-	if s = NewDefaultScanner("file", "foo", "bar", "weechat"); s == nil {
+	var s *scanner
+	var e error
+	if s, e = newScanner("network", "#deviate", "weechat", "file"); e != nil {
+		t.Fatal(e)
+	} else if s == nil {
 		t.Error("Should return weechat scanner.")
 	}
 
-	if s.filename != "file" {
+	if s.filenames[0] != "file" {
 		t.Error(`Should set filename to "file"`)
 	}
 
@@ -172,13 +192,16 @@ func TestScanner_ParseReader(t *testing.T) {
 
 	reader := bytes.NewBufferString(weechatFile)
 
-	sc := NewDefaultScanner("derp", "test_network", "#deviate", "weechat")
+	sc, err := newScanner("network", "#deviate", "weechat", "file")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	var s *stats.Stats
+	var s = stats.NewStats()
 	var n *stats.Network
 
-	if s = sc.ParseReader(reader); s == nil {
-		t.Error("Should not return nil.")
+	if err = sc.parseReader(s, reader); err != nil {
+		t.Fatal("Error parsing stats:", err)
 	}
 
 	if n = s.GetNetwork("test_network"); n == nil {
@@ -198,14 +221,17 @@ func TestScanner_ParseReader(t *testing.T) {
 	}
 }
 
-func TestScanner_ParseLine(t *testing.T) {
+func TestScanner_parseLine(t *testing.T) {
 	t.Parallel()
 
 	s := stats.NewStats()
 
-	sc := NewDefaultScanner("file", "network", "#deviate", "weechat")
+	sc, err := newScanner("network", "#deviate", "weechat", "file")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	sc.ParseLine(s, weechatJoin)
+	sc.parseLine(s, weechatJoin)
 
 	if n := s.GetNetwork("network"); n == nil {
 		t.Error("Stats should have the network.")
