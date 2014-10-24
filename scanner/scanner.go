@@ -148,7 +148,8 @@ func loadParser(filename string) (parser, error) {
 	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
-	for line := 0; scanner.Scan(); line++ {
+	var line = 0
+	for ; scanner.Scan(); line++ {
 		switch line {
 		case 0:
 			p.dateFormat = scanner.Text()
@@ -177,6 +178,9 @@ func loadParser(filename string) (parser, error) {
 
 	if err = scanner.Err(); err != nil {
 		return p, fmt.Errorf("Failed to parse file: %v", err)
+	}
+	if line != 9 {
+		return p, fmt.Errorf("Must supply a line for each of: dateFormat, message, join, part, kick, quit, action, mode, topic")
 	}
 	return p, nil
 }
