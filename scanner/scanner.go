@@ -25,7 +25,7 @@ as an input file.
 To invoke scanner with a custom parser simply define a file that starts with a date
 format and supplies a regex for the following in order, ensuring all named regex args
 are supplied:
-  message [date, nick, message] 
+  message [date, nick, message]
   join    [date, nick, host]
   part    [date, nick, host]
   kick    [date, nick, target, message]
