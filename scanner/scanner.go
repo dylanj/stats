@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	parserFlag = flag.String("parser", "weechat", "A named internal log parser or a parser file to load. Internal: [weechat]")
+	parserFlag = flag.String("parser", "weechat", "A named internal log parser or a parser file to load.")
 	netFlag    = flag.String("network", "", "The network where the log file came from.")
 	chanFlag   = flag.String("channel", "", "The channel where the log file came from.")
 )
@@ -21,6 +21,8 @@ var (
 var usage = `
 Scanner should be invoked with one or more filenames. Use * as to use standard in
 as an input file.
+
+Available Parsers: weechat
 
 To invoke scanner with a custom parser simply define a file that starts with a date
 format and supplies a regex for the following in order, ensuring all named regex args
@@ -34,7 +36,7 @@ are supplied:
   mode    [date, mode, nick]
   topic   [date, nick, action]
 
-eg.
+Example file:
 2006-01-02 15:04:05
 ^(?P<date>[0-9:\- ]*)\t(?:[@&+])?(?P<nick>[^\s\-]+)\t(?P<message>.*)$
 ^(?P<date>[0-9:\- ]*)\t-->\t(?P<nick>.*) \((?P<host>.*)\) has joined (?P<channel>(?:&|#)\w+)$
@@ -61,8 +63,12 @@ func main() {
 	}
 
 	if len(*netFlag) == 0 {
+		fmt.Fprintln(os.Stderr, "Must specify the network.")
+		os.Exit(1)
 	}
 	if len(*chanFlag) == 0 {
+		fmt.Fprintln(os.Stderr, "Must specify the channel.")
+		os.Exit(1)
 	}
 
 	sc, err := newScanner(*netFlag, *chanFlag, *parserFlag, remaining...)
