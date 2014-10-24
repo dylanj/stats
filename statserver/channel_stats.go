@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"sort"
 
 	"github.com/DylanJ/stats"
@@ -47,29 +45,6 @@ type ByMessageCount []*UserJSON
 func (a ByMessageCount) Len() int           { return len(a) }
 func (a ByMessageCount) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByMessageCount) Less(i, j int) bool { return a[i].MessageCount < a[j].MessageCount }
-
-func channelStats(w http.ResponseWriter, s *stats.Stats, n, c string) {
-	channel := s.GetChannel(n, c)
-
-	if channel == nil {
-		// should probably return a json error here and handle that
-		// on the client
-		fmt.Println("Couldnt load channel (%s,%s)", n, c)
-		return
-	}
-
-	data := &ChannelStatsJSON{
-		HourlyChart: channel.HourlyChart,
-		TopURLs:     channel.URLCounter.Top[:15],
-		TopWords:    channel.WordCounter.Top,
-		TopSwears:   channel.SwearCounter.Top,
-		TopUsers:    topUsers(s, channel),
-		SwearCount:  channel.SwearCounter.Count,
-	}
-
-	enc := json.NewEncoder(w)
-	enc.Encode(data)
-}
 
 func topUsers(s *stats.Stats, c *stats.Channel) []*UserJSON {
 	var users []*UserJSON
