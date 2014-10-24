@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/aarondl/ultimateq/irc"
@@ -30,6 +31,8 @@ type Stats struct {
 	MessageIDCount uint
 	ChannelIDCount uint
 	UserIDCount    uint
+
+	sync.RWMutex
 }
 
 // NewStats initializes a Stats struct.
