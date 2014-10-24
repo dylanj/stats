@@ -32,7 +32,7 @@ type Stats struct {
 	ChannelIDCount uint
 	UserIDCount    uint
 
-	sync.RWMutex
+	mut sync.RWMutex
 }
 
 // NewStats initializes a Stats struct.
@@ -280,4 +280,24 @@ func loadDatabase() (*Stats, error) {
 	stats.buildIndexes()
 
 	return &stats, nil
+}
+
+// Lock proxies the RWMutex's Lock function.
+func (s *Stats) Lock() {
+	s.mut.Lock()
+}
+
+// Unlock proxies the RWMutex's Unlock function.
+func (s *Stats) Unlock() {
+	s.mut.Unlock()
+}
+
+// RLock proxies the RWMutex's RLock function.
+func (s *Stats) RLock() {
+	s.mut.RLock()
+}
+
+// RUnlock proxies the RWMutex's Unlock function.
+func (s *Stats) RUnlock() {
+	s.mut.RUnlock()
 }
