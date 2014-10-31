@@ -16,13 +16,14 @@ const (
 var st *stats.Stats
 
 func main() {
-	st = stats.NewStats()
-
-	StartServer(":8080", st)
+	s := stats.NewStats()
+	StartServer(":8080", s)
 }
 
 // StartServer starts the webserver that will serve the stats pages.
 func StartServer(bind string, s *stats.Stats) {
+	st = s
+
 	http.Handle(assetURL, http.StripPrefix(assetURL, http.FileServer(http.Dir(localAssetPath))))
 	http.Handle("/api.json", jsonware.JSON(testHandler))
 
